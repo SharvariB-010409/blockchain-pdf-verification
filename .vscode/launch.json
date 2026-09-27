@@ -1,0 +1,16 @@
+{
+  "configurations": [
+    {
+      "name": "Python Debugger:lom_partner_svc",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--host", "0.0.0.0", "--port", "8080"],
+      "cwd": "${workspaceFolder}",
+      "jinja": true,
+      "env": {
+        "AWS_PROFILE": "lom-dev"
+      }
+    }
+  ]
+}

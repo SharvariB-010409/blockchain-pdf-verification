@@ -3,10 +3,7 @@ import json, os, socket
 import uuid
 from datetime import datetime, timezone
 from app.services.logger import logger
-from fastapi import status
-from fastapi.responses import JSONResponse
 from pathlib import Path
-from app.db.models import Document
 from sqlalchemy.orm import Session
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -141,10 +138,9 @@ class Blockchain:
         
         if not cls.health_check():
             logger.warning("Hyperledger Fabric network is unreachable.")
-            return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                content={"integrity": False,
-                                        "message" : "Hyperledger Fabric network is unreachable."
-                                        })
+            return {"integrity": False,
+                    "message" : "Hyperledger Fabric network is unreachable."
+                    }
         
         cls.first_block()
         
@@ -217,7 +213,7 @@ class Blockchain:
                 "hash_matches": chain_hash_matches, 
                 "blockchain_status": blockchain_status,
                 "blockchain_transaction_id": target_block.data.get("blockchain_transaction_id"),
-    }
+            }
     
     #remove document 
     @classmethod
@@ -236,7 +232,7 @@ class Blockchain:
             if db and isinstance(cls.chain[i].data, dict):
                 doc_id = cls.chain[i].data.get("document_id")
                 if doc_id :
-                        doc_record = db.query(Document).filter(Document.id == doc_id).first()
+                        doc_record = db.query(Document).filter(Document.id == doc_id).one_or_none()
                         if doc_record:
                             doc_record.blockchain_block_number = i
 
@@ -253,21 +249,18 @@ class Blockchain:
             
             if current_block.hash != current_block.calculate_hash():
                 logger.warning(f"Block {current_block.index} has been tampered with.")
-                return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                    content={"integrity": False,
-                                             "message" : f"Block {current_block.index} has been tampered with."
-                                    })
+                return {"integrity": False,
+                        "message" : f"Block {current_block.index} has been tampered with."
+                        }
             
             if current_block.previous_hash != previous_block.hash:
                 logger.warning(f"Block {current_block.index} is not linked to the previous block.")
-                return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                    content={"integrity": False,
-                                             "message" : f"Block {current_block.index} is not linked to the previous block."
-                                    })
+                return {"integrity": False,
+                        "message" : f"Block {current_block.index} is not linked to the previous block."
+                        }
         
-        return JSONResponse(status_code=status.HTTP_200_OK,
-                            content={"integrity": True,
-                                     "message" : "Blockchain integrity verified. All blocks are valid and linked correctly."
-                            })
+        return {"integrity": True,
+                "message" : "Blockchain integrity verified. All blocks are valid and linked correctly."
+                }
         
 document_blockchain = Blockchain()

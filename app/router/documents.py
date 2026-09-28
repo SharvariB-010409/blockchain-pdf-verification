@@ -17,7 +17,7 @@ async def upload_document(
     file: UploadFile = File(...),
     document_type: str = Form(...),
     db: Session = Depends(get_db)
-):
+): 
     try:
         # Validate PDF and generate SHA-256 hash
         await file.seek(0)
@@ -26,17 +26,15 @@ async def upload_document(
         
         # Ensure hash starts with "sha256:"
         if not pdf_hash.startswith("sha256:"):
-            clean_hash = pdf_hash
             formatted_hash = f"sha256:{pdf_hash}"
         else:
-            clean_hash = pdf_hash.replace("sha256:", "")
             formatted_hash = pdf_hash
 
         # Check whether the document hash already exists in DB
         document_exists = (
             db.query(Document)
             .filter(Document.sha256_hash == formatted_hash)
-            .first()
+            .one_or_none()
         )
 
         # If document already exists, return existing record
@@ -95,23 +93,19 @@ async def upload_document(
             db.commit()
             db.refresh(document)
 
-        except Exception:
+        except Exception as e :
             # Blockchain registration failed.
             db.rollback()
 
             document = db.query(Document).filter(
                 Document.id == document_id
-            ).first()
+            ).one_or_none()
 
             if document:
                 document.blockchain_status = "FAILED"
                 db.commit()
 
-            logger.exception(
-                "Blockchain registration failed for document %s",
-                document_id
-            )
-
+            logger.exception("Blockchain registration failed for document %s",document_id)
             return JSONResponse(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 content={
@@ -124,13 +118,14 @@ async def upload_document(
             )
 
         # Return successful response
-        return {
-                "document_id": str(document.id),
-                "record_id": str(document.id),
-                "sha256_hash": f"sha256:{document.sha256_hash.replace('sha256:', '')}",
-                "blockchain_status": str(document.blockchain_status).lower(), 
-                "blockchain_transaction_id": document.blockchain_transaction_id
-        }
+        return JSONResponse(status_code = status.HTTP_201_CREATED,
+                            content={
+                                "document_id": str(document.id),
+                                "record_id": str(document.id),
+                                "sha256_hash": f"sha256:{document.sha256_hash.replace('sha256:', '')}",
+                                "blockchain_status": str(document.blockchain_status).lower(), 
+                                "blockchain_transaction_id": document.blockchain_transaction_id
+        })
 
     except HTTPException:
         # Preserve validation errors from HashService
@@ -140,7 +135,6 @@ async def upload_document(
         db.rollback()
 
         logger.exception("Database error while uploading document")
-
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
@@ -153,7 +147,6 @@ async def upload_document(
         db.rollback()
 
         logger.exception("Unexpected error while uploading document")
-
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
@@ -173,10 +166,10 @@ async def verify_document(
     db: Session = Depends(get_db)
 ):
     try : 
-        document = db.query(Document).filter(Document.id == document_id).first()
+        document = db.query(Document).filter(Document.id == document_id).one_or_none()
         if not document:
             logger.warning("Document record not found.")
-            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, 
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, 
                             content={"success" : False,
                                     "message" : "Document record not found."})
         
@@ -196,15 +189,16 @@ async def verify_document(
         overall_verified = (
             hash_matches and chain_hash_matches and record_exists and is_valid_status
         )
-        return {
-            "document_id": document.id,
-            "record_id" : document.id,
-            "verified": overall_verified,
-            "hash_matches": hash_matches,
-            "blockchain_record_exists": True,
-            "blockchain_status" : block_status,
-            "blockchain_transaction_id": document.blockchain_transaction_id
-    }
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content={
+                                    "document_id": document.id,
+                                    "record_id" : document.id,
+                                    "verified": overall_verified,
+                                    "hash_matches": hash_matches,
+                                    "blockchain_record_exists": True,
+                                    "blockchain_status" : block_status,
+                                    "blockchain_transaction_id": document.blockchain_transaction_id
+                                })
     except Exception as e: 
             logger.warning(f"Unhandled Exception: {str(e)}")
             return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, 
@@ -216,7 +210,7 @@ async def get_blockchain_record(
     document_id: str,
     db: Session = Depends(get_db)
 ):
-    document = db.query(Document).filter(Document.id == document_id).first()
+    document = db.query(Document).filter(Document.id == document_id).one_or_none()
     if not document:
         logger.warning("Document not found !")
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, 
@@ -234,18 +228,19 @@ async def get_blockchain_record(
 
     clean_hash = document.sha256_hash.replace("sha256:", "").lower()
     
-    return {
-        "record_id": str(document.id),
-        "document_hash": f"sha256:{clean_hash}",
-        "blockchain_transaction_id": document.blockchain_transaction_id,
-        "blokchain_block_number": actual_block_number,
-        "status": str(document.blockchain_status).lower()
-    }
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={
+                            "record_id": str(document.id),
+                            "document_hash": f"sha256:{clean_hash}",
+                            "blockchain_transaction_id": document.blockchain_transaction_id,
+                            "blokchain_block_number": actual_block_number,
+                            "status": str(document.blockchain_status).lower()
+                        })
     
 # remove document 
 @router.delete("/{document_id}")
 async def delete_document(document_id: str, db: Session = Depends(get_db)):
-    document = (db.query(Document).filter(Document.id == str(document_id)).first())
+    document = (db.query(Document).filter(Document.id == str(document_id)).one_or_none())
     if not document:
         logger.warning("Document not Found")
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, 
@@ -259,7 +254,8 @@ async def delete_document(document_id: str, db: Session = Depends(get_db)):
     # Sync removal from in-memory Blockchain
     Blockchain.remove_document(document_id, db)
 
-    return {"success": True, "message": "Document and blockchain record removed"}
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={"success": True, "message": "Document and blockchain record removed"})
    
 # get all records of blockchain
 @router.get("/blockchain/chain")
@@ -276,7 +272,8 @@ async def get_full_blockchain():
             }
         )
 
-    return {
-        "length": len(chain_data),
-        "chain": chain_data,
-    }
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={
+                            "length": len(chain_data),
+                            "chain": chain_data,
+                        })

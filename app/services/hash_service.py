@@ -19,20 +19,12 @@ class HashService:
         # Check file size
         if len(contents) > MAX_FILE_SIZE:
             logger.warning("File size exceeds 10 MB.")
-
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="File size exceeds the maximum limit of 10 MB."
-            )
+            return{"message":"File size exceeds the maximum limit of 10 MB."}
 
         # Check whether file is a PDF
         if not contents.startswith(b"%PDF"):
             logger.warning("File is not a valid PDF.")
-
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="File is not a valid PDF."
-            )
+            return{"message":"File is not a valid PDF."}
 
         # Calculate SHA-256 hash
         sha256_hash = hashlib.sha256(contents).hexdigest()

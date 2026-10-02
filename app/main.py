@@ -11,6 +11,7 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try :
         Blockchain.rebuild_from_db(db)
+        Blockchain.sync_pending_documents(db)
     finally : 
         db.close()
     yield

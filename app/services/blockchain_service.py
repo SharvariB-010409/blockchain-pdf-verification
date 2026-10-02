@@ -39,16 +39,22 @@ class Blockchain:
     # it doen not delete the records when we stop and restart the server 
     @classmethod
     def rebuild_from_db(cls, db_session):
-        from app.db.models import Document 
+        from app.db.models import Document, DocumentStatus, BlockchainStatus
 
         # reset chain
         cls.chain = []
         cls.first_block()
+        
+        is_fabric_connected = cls.health_check()
 
         # fetch all saved documents 
         documents = db_session.query(Document).order_by(Document.created_at.asc()).all()
 
         for doc in documents:
+            if is_fabric_connected and str(doc.blockchain_status).upper() != BlockchainStatus.CONFIRMED.value:
+                doc.blockchain_transaction_id = str(uuid.uuid4())
+                doc.blockchain_status = "CONFIRMED"
+                doc.document_status = "ACTIVE"
             document_data = {
                 "document_id": str(doc.id),
                 "document_hash": str(doc.sha256_hash),
@@ -68,6 +74,7 @@ class Blockchain:
             doc.blockchain_block_number = new_block.index
             
         db_session.commit()
+        cls.save_chain()
         logger.info(f"Blockchain rebuilt from PostgreSQL ({len(cls.chain)} blocks loaded).")
     
     # load chain 
@@ -138,10 +145,7 @@ class Blockchain:
         
         if not cls.health_check():
             logger.warning("Hyperledger Fabric network is unreachable.")
-            return {"integrity": False,
-                    "message" : "Hyperledger Fabric network is unreachable."
-                    }
-        
+            raise ConnectionError("Hyperledger Fabric network is unreachable.")                    
         cls.first_block()
         
         # transaction 
@@ -262,5 +266,64 @@ class Blockchain:
         return {"integrity": True,
                 "message" : "Blockchain integrity verified. All blocks are valid and linked correctly."
                 }
+
+    # updates the document_status and blockchain_status when fabric is connected 
+    # the documents that are saved in db but failed to register in blockchain, gets added to blockchain
+    @classmethod
+    def sync_pending_documents(cls, db_session: Session):
+        from app.db.models import Document, DocumentStatus, BlockchainStatus
+
+        # check if docker is runnning
+        if not cls.health_check():
+            logger.info("Sync skipped: Blockchain network is still offline.")
+            return False
+
+        pending_docs = (
+            db_session.query(Document)
+            .filter(Document.blockchain_status != BlockchainStatus.CONFIRMED.value)
+            .all()
+        )
+
+        if not pending_docs:
+            return True
+
+        for doc in pending_docs:
+            try:
+                # generate a new transaction ID for the document which was not registered in blockchain and now is being synced
+                tx_id = str(uuid.uuid4())
+                cls.first_block()
+
+                document_data = {
+                    "document_id": str(doc.id),
+                    "document_hash": str(doc.sha256_hash),
+                    "document_type": str(doc.document_type),
+                    "blockchain_status": BlockchainStatus.CONFIRMED.value,
+                    "blockchain_transaction_id": tx_id,
+                    "schema_version": "1.0"
+                }
+
+                previous_block = cls.chain[-1]
+                new_block = Block(
+                index=len(cls.chain),
+                data=document_data,
+                previous_hash=previous_block.hash
+                )
+                cls.chain.append(new_block)
+                cls.save_chain()
+
+                # update document_status and blockchain_status in db 
+                doc.blockchain_transaction_id = tx_id
+                doc.blockchain_block_number = new_block.index
+                doc.blockchain_status = BlockchainStatus.CONFIRMED.value
+                doc.document_status = DocumentStatus.ACTIVE.value
+
+            except Exception as e:
+                logger.error(f"Failed to sync document {doc.id} to blockchain: {e}")
+
+        db_session.commit()
+        cls.save_chain()
+        logger.info("Blockchain sync completed.")
+        return True
         
 document_blockchain = Blockchain()
+

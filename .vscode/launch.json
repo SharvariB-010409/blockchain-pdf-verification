@@ -1,7 +1,7 @@
 {
   "configurations": [
     {
-      "name": "Python Debugger:lom_partner_svc",
+      "name": "Python Debugger:blockchain-document-verification",
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
@@ -9,7 +9,7 @@
       "cwd": "${workspaceFolder}",
       "jinja": true,
       "env": {
-        "AWS_PROFILE": "lom-dev"
+        "AWS_PROFILE": "blockchain"
       }
     }
   ]

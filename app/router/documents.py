@@ -94,18 +94,13 @@ async def upload_document(
             db.refresh(document)
 
         except Exception as e :
-            # Blockchain registration failed.
-            db.rollback()
+            # Document uploaded but Blockchain registration failed.
+            document.document_status = "PENDING"
+            document.blockchain_status = "FAILED"
+            db.commit()
+            db.refresh(document)
 
-            document = db.query(Document).filter(
-                Document.id == document_id
-            ).one_or_none()
-
-            if document:
-                document.blockchain_status = "FAILED"
-                db.commit()
-
-            logger.exception("Blockchain registration failed for document %s",document_id)
+            logger.exception("Blockchain registration failed for document %s", document_id)
             return JSONResponse(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 content={
@@ -113,6 +108,7 @@ async def upload_document(
                     "message": "Document saved, but blockchain registration failed.",
                     "document_id": document_id,
                     "sha256_hash": formatted_hash,
+                    "document_status": "PENDING",
                     "blockchain_status": "FAILED"
                 }
             )
@@ -191,8 +187,8 @@ async def verify_document(
         )
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content={
-                                    "document_id": document.id,
-                                    "record_id" : document.id,
+                                    "document_id": str(document.id),
+                                    "record_id" : str(document.id),
                                     "verified": overall_verified,
                                     "hash_matches": hash_matches,
                                     "blockchain_record_exists": True,

@@ -85,7 +85,8 @@ async def upload_document(
                 document_type=document_type
             )
 
-            # Update blockchain status in DB
+            # Update document status and blockchain status in DB
+            document.document_status = "ACTIVE"
             document.blockchain_status = tx_result.get("blockchain_status", "CONFIRMED")
             document.blockchain_transaction_id = tx_result.get("blockchain_transaction_id")
             document.blockchain_block_number = tx_result.get("blockchain_block_number")

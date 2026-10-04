@@ -1,14 +1,14 @@
 [
     {
         "index": 0,
-        "timestamp": "2026-10-03T20:23:35.642394+00:00",
+        "timestamp": "2026-10-04T12:04:05.431557+00:00",
         "data": "First Block",
         "previous_hash": "0",
-        "hash": "095ddd97fa70020bc075814be78fdc95523a5937bb7c3ade83c8e660f7dd346e"
+        "hash": "c242cfa15775beb7e31eedaa1815ca1e4779bb6d21b674a80bd4cd2b202f9185"
     },
     {
         "index": 1,
-        "timestamp": "2026-10-03T20:23:36.022738+00:00",
+        "timestamp": "2026-10-04T12:04:06.393614+00:00",
         "data": {
             "document_id": "e4898fdb-2cb2-4c44-8844-f539c27d8c44",
             "document_hash": "sha256:87318fbaad22e24f6f97d722bca204c2a0cbf057ac07f1e95993fec032e01741",
@@ -17,12 +17,12 @@
             "blockchain_transaction_id": "0a54ca16-e03c-4c87-8fc3-3c51141c6759",
             "schema_version": "1.0"
         },
-        "previous_hash": "095ddd97fa70020bc075814be78fdc95523a5937bb7c3ade83c8e660f7dd346e",
-        "hash": "42a705aff8d0cba9e4f6801b66e841c7cfa4b504329ebdf71c7dc633dd2d6dc9"
+        "previous_hash": "c242cfa15775beb7e31eedaa1815ca1e4779bb6d21b674a80bd4cd2b202f9185",
+        "hash": "1c16583b6fd710f0e1c9466927ee76302e760a9e4fcda971d0f723b0d9ca33b5"
     },
     {
         "index": 2,
-        "timestamp": "2026-10-03T20:23:36.022738+00:00",
+        "timestamp": "2026-10-04T12:04:06.393614+00:00",
         "data": {
             "document_id": "c0af22af-ef02-44ac-83c7-2142c8ea98e2",
             "document_hash": "sha256:5688896592744b75d621bb0a7bdb0c1e62720f5219247c58f30842e7e85ff027",
@@ -31,12 +31,12 @@
             "blockchain_transaction_id": "6aecc8f9-9476-4647-86fc-71f1ebfdae6a",
             "schema_version": "1.0"
         },
-        "previous_hash": "42a705aff8d0cba9e4f6801b66e841c7cfa4b504329ebdf71c7dc633dd2d6dc9",
-        "hash": "629dd77448fcf1a32442e6e9e15959e4b742b31238ab3ecfa5c14cbd65131cab"
+        "previous_hash": "1c16583b6fd710f0e1c9466927ee76302e760a9e4fcda971d0f723b0d9ca33b5",
+        "hash": "66c6a875f577a39c03ed2bfa2e53ec55677b019d13df3a6f0d8c6f45c1f6ff02"
     },
     {
         "index": 3,
-        "timestamp": "2026-10-03T20:23:36.022738+00:00",
+        "timestamp": "2026-10-04T12:04:06.393614+00:00",
         "data": {
             "document_id": "c2e46a6b-a37d-4f5e-ab0f-80a94b771c26",
             "document_hash": "sha256:81b23f40417bc1c2069782db7ad5ea0182175c9acb4766ebfdeefbe071a70bc0",
@@ -45,7 +45,21 @@
             "blockchain_transaction_id": "d728f6ab-72d7-4231-839f-0c13a8519496",
             "schema_version": "1.0"
         },
-        "previous_hash": "629dd77448fcf1a32442e6e9e15959e4b742b31238ab3ecfa5c14cbd65131cab",
-        "hash": "9e29f84c7a04177fd39d332df55db5591ae6a126a5d00f45b532bfae783126a6"
+        "previous_hash": "66c6a875f577a39c03ed2bfa2e53ec55677b019d13df3a6f0d8c6f45c1f6ff02",
+        "hash": "62e0baa9b06b7072659d69c5cab076c4f286815710a36d8b3ed40f726817f8d9"
+    },
+    {
+        "index": 4,
+        "timestamp": "2026-10-04T12:04:06.393614+00:00",
+        "data": {
+            "document_id": "7a760588-c078-4db7-8c5f-a451a3253cf8",
+            "document_hash": "sha256:c538aebbd27cfbea61fc37137c41a040e26381d315e81cc609e8df096b98ce87",
+            "document_type": "receipt",
+            "blockchain_status": "CONFIRMED",
+            "blockchain_transaction_id": "4a30237b-c8d5-4cde-a384-dce0f26953f2",
+            "schema_version": "1.0"
+        },
+        "previous_hash": "62e0baa9b06b7072659d69c5cab076c4f286815710a36d8b3ed40f726817f8d9",
+        "hash": "4fb268708ac6425e8326849a41c9528c60d615bc7bb55cabf64e485fb8cd80b5"
     }
 ]

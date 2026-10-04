@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Explorer</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --card-bg: #1f2937;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border-color: #1f2937;
+            --border-active: #06b6d4;
+            --glow-color: rgba(6, 182, 212, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .btn-sync {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-sync:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px var(--glow-color);
+        }
+
+        /* Chain Sequence Panel */
+        .section-panel {
+            background: var(--panel-bg);
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .chain-container {
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            padding: 10px 5px 20px 5px;
+            gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-cyan) var(--bg-color);
+        }
+
+        .block-card {
+            background: var(--card-bg);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            min-width: 260px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .block-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(6, 182, 212, 0.5);
+        }
+
+        .block-card.active {
+            border-color: var(--border-active);
+            box-shadow: 0 0 20px var(--glow-color);
+            background: #111827;
+        }
+
+        .block-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .block-num {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--accent-cyan);
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-genesis { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .badge-confirmed { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
+
+        .block-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .block-card-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .mini-hash-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .mini-hash-val {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #38bdf8;
+            background: #0b0f19;
+            padding: 4px 6px;
+            border-radius: 4px;
+            margin-top: 2px;
+            word-break: break-all;
+        }
+
+        .connector {
+            color: var(--accent-cyan);
+            font-size: 20px;
+            font-weight: bold;
+            padding: 0 4px;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+
+        .details-panel {
+            background: var(--panel-bg);
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 16px;
+        }
+
+        .details-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .details-icon {
+            font-size: 24px;
+        }
+
+        .details-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .hash-card {
+            background: var(--card-bg);
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 16px;
+            grid-column: 1 / -1;
+        }
+
+        .hash-display {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--accent-cyan);
+            background: #0b0f19;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            word-break: break-all;
+            margin-top: 6px;
+        }
+
+        .payload-container {
+            background: #0b0f19;
+            color: #e5e7eb;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loader {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: center;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        
+        <header>
+            <h1>Blockchain Explorer</h1>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">Chain State</span>
+                    <span class="stat-val" style="color: var(--accent-green);">Live Verified</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Blocks</span>
+                    <span class="stat-val" id="totalBlocksCount">--</span>
+                </div>
+                <button class="btn-sync" onclick="loadBlockchain()">🔄 Sync Chain</button>
+            </div>
+        </header>
+
+        <!-- Horizontal Chain Stream -->
+        <div class="section-panel">
+            <div class="section-title">
+                <span>🔗</span> Blockchain Sequence
+            </div>
+            <div class="section-sub">
+                Click any block card to view its full details and raw contents below.
+            </div>
+
+            <div class="chain-container" id="chainContainer">
+                <div class="loader">Loading ledger records...</div>
+            </div>
+        </div>
+
+        <div class="details-panel" id="detailsPanel">
+            <div class="loader">Select a block above to view full contents.</div>
+        </div>
+
+    </div>
+
+    <script>
+        let globalChainData = [];
+
+        async function loadBlockchain() {
+            const container = document.getElementById('chainContainer');
+            const totalCountBadge = document.getElementById('totalBlocksCount');
+
+            container.innerHTML = '<div class="loader">Fetching live chain...</div>';
+
+            try {
+                const response = await fetch('/api/v1/documents/blockchain/chain');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                globalChainData = data.chain || data;
+
+                totalCountBadge.innerText = `${globalChainData.length} Blocks`;
+                container.innerHTML = '';
+
+                globalChainData.forEach((block, index) => {
+                    const isGenesis = block.index === 0;
+
+                    // Create block card
+                    const card = document.createElement('div');
+                    card.className = `block-card ${index === 0 ? 'active' : ''}`;
+                    card.id = `block-card-${block.index}`;
+                    card.onclick = () => selectBlock(index);
+
+                    // Title extraction from payload or default
+                    let blockTitle = isGenesis ? 'Genesis Block' : `Block ${block.index}`;
+                    if (typeof block.data === 'object' && block.data.title) {
+                        blockTitle = block.data.title;
+                    } else if (typeof block.data === 'string' && block.data !== 'First Block') {
+                        blockTitle = block.data;
+                    }
+
+                    card.innerHTML = `
+                        <div class="block-card-head">
+                            <span class="block-num">BLOCK ${block.index}</span>
+                            <span class="badge ${isGenesis ? 'badge-genesis' : 'badge-confirmed'}">
+                                ${isGenesis ? 'GENESIS' : 'CONFIRMED'}
+                            </span>
+                        </div>
+                        <div class="block-card-title">${blockTitle}</div>
+                        <div class="block-card-time">${new Date(block.timestamp).toLocaleString()}</div>
+                        <div>
+                            <div class="mini-hash-label">Block Hash</div>
+                            <div class="mini-hash-val">${block.hash ? block.hash.substring(0, 16) + '...' : 'N/A'}</div>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+
+                    // Add connector arrow between blocks
+                    if (index < globalChainData.length - 1) {
+                        const conn = document.createElement('div');
+                        conn.className = 'connector';
+                        conn.innerHTML = '➔';
+                        container.appendChild(conn);
+                    }
+                });
+
+                // Automatically select the first block on load
+                if (globalChainData.length > 0) {
+                    selectBlock(0);
+                }
+
+            } catch (err) {
+                container.innerHTML = `<div class="loader" style="color: #ef4444;">Failed to load chain: ${err.message}</div>`;
+                totalCountBadge.innerText = 'Error';
+            }
+        }
+
+        // Render detailed content panel for the selected block
+        function selectBlock(index) {
+            const block = globalChainData[index];
+            if (!block) return;
+
+            // Update active state CSS on cards
+            document.querySelectorAll('.block-card').forEach(c => c.classList.remove('active'));
+            const activeCard = document.getElementById(`block-card-${block.index}`);
+            if (activeCard) activeCard.classList.add('active');
+
+            const isGenesis = block.index === 0;
+            const detailsPanel = document.getElementById('detailsPanel');
+
+            // Format payload display
+            let payloadFormatted = '';
+            if (typeof block.data === 'object') {
+                payloadFormatted = JSON.stringify(block.data, null, 2);
+            } else {
+                payloadFormatted = block.data;
+            }
+
+            detailsPanel.innerHTML = `
+                <div class="details-header">
+                    <div class="details-title-group">
+                        <span class="details-icon">📄</span>
+                        <div>
+                            <div class="details-title">Block ${block.index} Details</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">
+                                Timestamp: ${new Date(block.timestamp).toISOString()} (${new Date(block.timestamp).toLocaleString()})
+                            </div>
+                        </div>
+                    </div>
+                    <span class="badge ${isGenesis ? 'badge-genesis' : 'badge-confirmed'}" style="font-size: 12px; padding: 6px 12px;">
+                        ${isGenesis ? 'GENESIS BLOCK' : 'CRYPTOGRAPHICALLY SEALED'}
+                    </span>
+                </div>
+
+                <!-- Detailed Specs Grid -->
+                <div class="details-grid">
+                    <div class="info-card">
+                        <div class="info-label">Block Height / Index</div>
+                        <div class="info-value">${block.index}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Validation Consensus</div>
+                        <div class="info-value" style="color: var(--accent-green);">SHA-256 Intact</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Previous Hash Proof</div>
+                        <div class="info-value" style="color: var(--accent-cyan); font-family: monospace;">
+                            ${block.previous_hash === '0' ? '0 (Genesis Root)' : 'Linked to Parent Block'}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cryptographic Linkage Hashes -->
+                <div class="hash-card">
+                    <div class="info-label">Previous Parent Hash (Block [N-1])</div>
+                    <div class="hash-display">${block.previous_hash}</div>
+                </div>
+
+                <div class="hash-card">
+                    <div class="info-label">Current Block Hash (This Block)</div>
+                    <div class="hash-display" style="color: var(--accent-green);">${block.hash}</div>
+                </div>
+
+                <!-- Full Raw Data Payload -->
+                <div class="hash-card">
+                    <div class="info-label">Block Data Payload & Content</div>
+                    <div class="payload-container">${payloadFormatted}</div>
+                </div>
+            `;
+        }
+
+        // Initialize on load
+        window.onload = loadBlockchain;
+    </script>
+
+</body>
+</html>

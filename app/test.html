@@ -8,19 +8,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0e17;
-            --panel-bg: #111726;
-            --card-bg: #182032;
-            --card-border: #1e293b;
-            --accent-cyan: #00e5ff;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-purple: #818cf8;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --text-dim: #6b7280;
-            --glow-cyan: rgba(0, 229, 255, 0.2);
-            --glow-green: rgba(16, 185, 129, 0.2);
+            --bg-dark: #fff5f8;
+            --panel-bg: #ffffff;
+            --card-bg: #fdf2f8;
+            --card-border: #fbcfe8;
+            --accent-cyan: #d946ef;
+            --accent-green: #e11d48;
+            --accent-red: #ea580c;
+            --accent-purple: #a855f7;
+            --text-main: #2e1065;
+            --text-muted: #7e22ce;
+            --text-dim: #9333ea;
+            --glow-cyan: rgba(217, 70, 239, 0.25);
+            --glow-green: rgba(225, 29, 72, 0.2);
         }
 
         * {
@@ -54,6 +54,7 @@
             justify-content: space-between;
             padding: 20px 16px;
             flex-shrink: 0;
+            box-shadow: 4px 0 15px rgba(236, 72, 153, 0.05);
         }
 
         .brand-logo {
@@ -66,12 +67,12 @@
         .brand-icon {
             width: 28px;
             height: 28px;
-            background: var(--accent-cyan);
+            background: linear-gradient(135deg, #ec4899, #f97316);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
+            color: #ffffff;
             font-weight: 800;
             font-size: 14px;
         }
@@ -80,15 +81,17 @@
             font-weight: 700;
             font-size: 15px;
             letter-spacing: 0.5px;
+            color: #831843;
         }
 
         .brand-version {
             font-size: 10px;
-            color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.1);
+            color: #be185d;
+            background: #fce7f3;
             padding: 2px 6px;
             border-radius: 4px;
             margin-left: auto;
+            font-weight: 600;
         }
 
         .nav-group-title {
@@ -122,14 +125,14 @@
         }
 
         .nav-item:hover {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
+            color: #831843;
+            background: #fce7f3;
         }
 
         .nav-item.active {
-            color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.08);
-            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: #be185d;
+            background: #fce7f3;
+            border: 1px solid #f472b6;
             box-shadow: 0 0 15px var(--glow-cyan);
         }
 
@@ -145,10 +148,26 @@
             display: inline-block;
             width: 8px;
             height: 8px;
-            background: var(--accent-green);
+            background: #f97316;
             border-radius: 50%;
             margin-right: 6px;
-            box-shadow: 0 0 8px var(--accent-green);
+            box-shadow: 0 0 8px #f97316;
+        }
+
+        .sidebar-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px;
+            background: #fff0f6;
+            border: 1px solid #fbcfe8;
+            border-radius: 12px;
+        }
+
+        .sidebar-card-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #831843;
         }
 
         /* Main Workspace Layout */
@@ -183,7 +202,7 @@
         .view-title {
             font-size: 24px;
             font-weight: 700;
-            color: var(--text-main);
+            color: #831843;
         }
 
         .grid-2col {
@@ -200,21 +219,22 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.03);
         }
 
         .card-title {
             font-size: 15px;
             font-weight: 600;
-            color: var(--text-main);
+            color: #831843;
         }
 
         /* Dropzone */
         .drop-zone {
-            border: 2px dashed rgba(0, 229, 255, 0.25);
+            border: 2px dashed #f472b6;
             border-radius: 10px;
             padding: 32px 20px;
             text-align: center;
-            background: rgba(24, 32, 50, 0.5);
+            background: #fff0f6;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -224,26 +244,27 @@
         }
 
         .drop-zone:hover, .drop-zone.dragover {
-            border-color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.05);
+            border-color: #ec4899;
+            background: #fce7f3;
             box-shadow: 0 0 20px var(--glow-cyan);
         }
 
         .drop-icon {
             width: 44px;
             height: 44px;
-            background: rgba(0, 229, 255, 0.1);
+            background: #fce7f3;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent-cyan);
+            color: #be185d;
             font-size: 20px;
         }
 
         .drop-text {
             font-size: 14px;
             font-weight: 600;
+            color: #831843;
         }
 
         .drop-subtext {
@@ -267,7 +288,7 @@
         }
 
         .form-input {
-            background: #0d121d;
+            background: #fff0f6;
             border: 1px solid var(--card-border);
             border-radius: 8px;
             padding: 10px 14px;
@@ -278,12 +299,12 @@
         }
 
         .form-input:focus {
-            border-color: var(--accent-cyan);
+            border-color: #ec4899;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #00e5ff, #0099ff);
-            color: #000;
+            background: linear-gradient(135deg, #ec4899, #f97316);
+            color: #ffffff;
             font-weight: 700;
             font-size: 13px;
             padding: 12px 20px;
@@ -297,11 +318,12 @@
             gap: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
         }
 
         .btn-primary:hover {
-            opacity: 0.9;
-            box-shadow: 0 0 20px var(--glow-cyan);
+            opacity: 0.95;
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
         }
 
         .btn-primary:disabled {
@@ -312,7 +334,7 @@
 
         /* Data Key-Value Detail Rows */
         .details-display-container {
-            background: #0d121d;
+            background: #fff0f6;
             border: 1px solid var(--card-border);
             border-radius: 8px;
             padding: 16px;
@@ -326,7 +348,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid #fbcfe8;
             padding-bottom: 8px;
             font-size: 12px;
         }
@@ -344,7 +366,7 @@
         }
 
         .detail-val {
-            color: var(--accent-cyan);
+            color: #be185d;
             font-family: 'Fira Code', monospace;
             word-break: break-all;
             text-align: right;
@@ -359,7 +381,7 @@
         }
 
         .docs-table th {
-            background: #0d121d;
+            background: #fff0f6;
             color: var(--text-dim);
             font-size: 10px;
             text-transform: uppercase;
@@ -369,17 +391,17 @@
 
         .docs-table td {
             padding: 12px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid #fbcfe8;
             color: var(--text-main);
         }
 
         .docs-table tr:hover {
-            background: rgba(255, 255, 255, 0.02);
+            background: #fdf2f8;
         }
 
         .hash-code {
             font-family: 'Fira Code', monospace;
-            color: var(--accent-cyan);
+            color: #c026d3;
             font-size: 11px;
         }
 
@@ -396,16 +418,16 @@
 
         .result-box.valid {
             display: flex;
-            background: rgba(16, 185, 129, 0.08);
-            border-color: rgba(16, 185, 129, 0.4);
-            color: var(--accent-green);
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #15803d;
         }
 
         .result-box.invalid {
             display: flex;
-            background: rgba(239, 68, 68, 0.08);
-            border-color: rgba(239, 68, 68, 0.4);
-            color: var(--accent-red);
+            background: #fff1f2;
+            border-color: #fca5a5;
+            color: #be123c;
         }
 
         /* Blockchain Explorer Component */
@@ -416,7 +438,7 @@
             padding: 10px 5px 20px 5px;
             gap: 12px;
             scrollbar-width: thin;
-            scrollbar-color: var(--accent-cyan) var(--bg-dark);
+            scrollbar-color: #ec4899 var(--bg-dark);
         }
 
         .block-card {
@@ -431,13 +453,13 @@
 
         .block-card:hover {
             transform: translateY(-4px);
-            border-color: rgba(0, 229, 255, 0.5);
+            border-color: #f472b6;
         }
 
         .block-card.active {
-            border-color: var(--accent-cyan);
+            border-color: #ec4899;
             box-shadow: 0 0 20px var(--glow-cyan);
-            background: #111827;
+            background: #ffffff;
         }
 
         .block-card-head {
@@ -455,21 +477,21 @@
             text-transform: uppercase;
         }
 
-        .badge-genesis { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-        .badge-confirmed { background: rgba(0, 229, 255, 0.2); color: var(--accent-cyan); }
+        .badge-genesis { background: #ffedd5; color: #ea580c; }
+        .badge-confirmed { background: #fce7f3; color: #be185d; }
 
         .connector {
-            color: var(--accent-cyan);
+            color: #ec4899;
             font-size: 20px;
             font-weight: bold;
             padding: 0 4px;
             flex-shrink: 0;
-            opacity: 0.6;
+            opacity: 0.8;
         }
 
         .payload-container {
-            background: #0d121d;
-            color: #e5e7eb;
+            background: #fff0f6;
+            color: #701a75;
             font-family: 'Fira Code', monospace;
             font-size: 12px;
             padding: 16px;
@@ -523,12 +545,9 @@
                 </ul>
             </div>
 
-            <div class="sidebar-footer">
-                <div style="display: flex; align-items: center; margin-bottom: 4px;">
-                    <span class="status-dot"></span>
-                    <span style="font-weight: 600;">Total Blocks</span>
-                </div>
-                <div style="font-family: 'Fira Code', monospace; color: var(--text-dim); font-size: 10px;" id="sidebarHeight">Height: #000_MAIN</div>
+            <div class="sidebar-card">
+                <span class="status-dot"></span>
+                <span id="sidebarHeight" class="sidebar-card-text">Total Blocks: 0</span>
             </div>
         </aside>
 
@@ -658,6 +677,7 @@
     </div>
 
     <script>
+        const BASE_URL = 'http://127.0.0.1:8080';
         let selectedUploadFile = null;
         let selectedUploadHash = '';
         let selectedVerifyFile = null;
@@ -738,21 +758,24 @@
             const docType = document.getElementById('docTypeInput').value;
             const detailsContainer = document.getElementById('notarizationDetails');
 
-            btn.disabled = true;
-            btn.innerText = 'MINING BLOCK...';
+            if (!selectedUploadFile) {
+                alert("Please select a file first.");
+                return;
+            }
 
+            btn.disabled = true;
+            btn.innerText = 'UPLOADING DOCUMENT...';
             detailsContainer.innerHTML = '<div class="loader">Committing document block to chain...</div>';
 
             try {
-                const res = await fetch('/api/v1/documents/blockchain/add', {
+                // Send multipart/form-data payload as required by documents.py
+                const formData = new FormData();
+                formData.append('file', selectedUploadFile);
+                formData.append('document_type', docType || 'Standard Document');
+
+                const res = await fetch(`${BASE_URL}/api/v1/documents`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        document_type: docType || 'Standard Document',
-                        original_filename: selectedUploadFile.name,
-                        file_hash: selectedUploadHash,
-                        filesize: selectedUploadFile.size
-                    })
+                    body: formData
                 });
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -799,13 +822,35 @@
             const tbody = document.getElementById('uploadedDocsTableBody');
 
             try {
-                const response = await fetch('/api/v1/documents/blockchain/chain');
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                
-                const data = await response.json();
-                const chain = data.chain || data;
+                // 1. Fetch chain data AND database records concurrently
+                const [chainRes, dbRes] = await Promise.all([
+                    fetch(`${BASE_URL}/api/v1/documents/blockchain/chain`),
+                    fetch(`${BASE_URL}/api/v1/documents`).catch(() => null)
+                ]);
 
-                document.getElementById('sidebarHeight').innerText = `Height: #${chain.length - 1}_MAIN`;
+                if (!chainRes.ok) throw new Error(`HTTP ${chainRes.status}`);
+                
+                const chainData = await chainRes.json();
+                const chain = Array.isArray(chainData) ? chainData : (chainData.chain || []);
+
+                // 2. Build map of clean SHA256 -> original_filename from Database
+                const dbFileNameMap = {};
+                if (dbRes && dbRes.ok) {
+                    const dbDocs = await dbRes.json();
+                    if (Array.isArray(dbDocs)) {
+                        dbDocs.forEach(doc => {
+                            if (doc.sha256_hash && doc.original_filename) {
+                                const cleanHash = doc.sha256_hash.replace(/^sha256:/i, '').trim().toLowerCase();
+                                dbFileNameMap[cleanHash] = doc.original_filename;
+                            }
+                        });
+                    }
+                }
+
+                const heightEl = document.getElementById('sidebarHeight');
+                if (heightEl) {
+                    heightEl.innerText = `Total Blocks: ${chain.length}`;
+                }
 
                 if (!Array.isArray(chain) || chain.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-dim);">No documents uploaded yet.</td></tr>';
@@ -813,24 +858,41 @@
                 }
 
                 tbody.innerHTML = '';
-                chain.forEach(block => {
+                chain.forEach((block, idx) => {
+                    if (!block) return;
+
                     const payload = block.data || {};
-                    const docType = payload.document_type || payload.type || (block.index === 0 ? 'Genesis' : 'N/A');
-                    const fileName = payload.original_filename || payload.filename || payload.title || (block.index === 0 ? 'Root Genesis Block' : 'Document File');
-                    const hash = payload.file_hash || block.hash || 'N/A';
+                    const docType = payload.document_type || payload.type || (block.index === 0 || idx === 0 ? 'Genesis' : 'N/A');
+                    
+                    // Extract and clean hash
+                    const rawHash = payload.file_hash || payload.document_hash || block.hash || '';
+                    const cleanHash = rawHash.replace(/^sha256:/i, '').trim().toLowerCase();
+
+                    // Match from Database Map -> Block Payload -> Default Fallback
+                    const fileName = dbFileNameMap[cleanHash] 
+                                || payload.original_filename 
+                                || payload.filename 
+                                || (block.index === 0 || idx === 0 ? 'Root Genesis Block' : 'Document File');
+
+                    let timeStr = 'N/A';
+                    if (block.timestamp) {
+                        const parsedDate = new Date(block.timestamp);
+                        timeStr = !isNaN(parsedDate) ? parsedDate.toLocaleString() : String(block.timestamp);
+                    }
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td><span style="color: var(--accent-cyan); font-weight: 700;">#${block.index}</span></td>
+                        <td><span style="color: #be185d; font-weight: 700;">${block.index ?? idx}</span></td>
                         <td>${docType}</td>
                         <td style="font-weight: 600;">${fileName}</td>
-                        <td class="hash-code">${hash.length > 20 ? hash.substring(0, 18) + '...' : hash}</td>
-                        <td style="color: var(--text-muted); font-size: 11px;">${new Date(block.timestamp).toLocaleString()}</td>
+                        <td class="hash-code">${rawHash.length > 20 ? rawHash.substring(0, 18) + '...' : rawHash}</td>
+                        <td style="color: var(--text-muted); font-size: 11px;">${timeStr}</td>
                     `;
                     tbody.appendChild(row);
                 });
 
             } catch (err) {
+                console.error("fetchUploadedDocuments error:", err);
                 tbody.innerHTML = `<tr><td colspan="5" style="color: var(--accent-red); text-align:center;">Failed to load documents: ${err.message}</td></tr>`;
             }
         }
@@ -840,6 +902,11 @@
             const btn = document.getElementById('verifySubmitBtn');
             const outcomeBox = document.getElementById('verifyOutcomeBox');
             const detailsContainer = document.getElementById('verifiedDocDetails');
+            
+            if (!selectedVerifyFile) {
+                alert("Please select a file to verify.");
+                return;
+            }
 
             btn.disabled = true;
             btn.innerText = 'QUERYING CHAIN...';
@@ -847,7 +914,38 @@
             detailsContainer.style.display = 'none';
 
             try {
-                const res = await fetch(`/api/v1/documents/blockchain/verify?hash=${selectedVerifyHash}`);
+                // First get all documents on chain to locate document_id
+                const chainRes = await fetch(`${BASE_URL}/api/v1/documents/blockchain/chain`);
+                const chainData = await chainRes.json();
+                const chain = chainData.chain || [];
+
+                let foundDocId = null;
+                for (const block of chain) {
+                    const d = block.data || {};
+                    if (d.document_hash === selectedVerifyHash || d.file_hash === selectedVerifyHash || d.document_hash === `sha256:${selectedVerifyHash}`) {
+                        foundDocId = d.document_id;
+                        break;
+                    }
+                }
+
+                if (!foundDocId) {
+                    outcomeBox.className = 'result-box invalid';
+                    outcomeBox.innerHTML = `
+                        <div style="font-size: 16px; font-weight: 700;">❌ Verification Failed</div>
+                        <div>No matching fingerprint was found on the blockchain.</div>
+                    `;
+                    outcomeBox.style.display = 'flex';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', selectedVerifyFile);
+
+                const res = await fetch(`${BASE_URL}/api/v1/documents/${foundDocId}/verify`, {
+                    method: 'POST',
+                    body: formData
+                });
+
                 const data = await res.json();
 
                 if (res.ok && (data.verified || data.found)) {
@@ -881,6 +979,7 @@
                         <div style="font-size: 16px; font-weight: 700;">❌ Verification Failed</div>
                         <div>No matching fingerprint was found on the blockchain. The document may have been tampered with or never anchored.</div>
                     `;
+                    outcomeBox.style.display = 'flex';
                 }
 
                 outcomeBox.style.display = 'flex';
@@ -901,37 +1000,41 @@
         // Blockchain Explorer Loader
         async function loadBlockchain() {
             const container = document.getElementById('chainContainer');
-
             container.innerHTML = '<div class="loader">Fetching live chain...</div>';
 
             try {
-                const response = await fetch('/api/v1/documents/blockchain/chain');
+                const response = await fetch(`${BASE_URL}/api/v1/documents/blockchain/chain`);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const data = await response.json();
-                globalChainData = data.chain || data;
+                globalChainData = Array.isArray(data) ? data : (data.chain || []);
 
                 container.innerHTML = '';
 
                 globalChainData.forEach((block, index) => {
-                    const isGenesis = block.index === 0;
+                    const isGenesis = block.index === 0 || index === 0;
 
                     const card = document.createElement('div');
                     card.className = `block-card ${index === 0 ? 'active' : ''}`;
-                    card.id = `block-card-${block.index}`;
+                    card.id = `block-card-${block.index ?? index}`;
                     card.onclick = () => selectBlock(index);
 
                     const payload = block.data || {};
-                    let title = payload.original_filename || payload.filename || payload.title || (isGenesis ? 'Genesis Root' : `Block ${block.index}`);
+                    
+                    // Extract the document type to display as the main text
+                    const docType = payload.document_type || payload.type || (isGenesis ? 'Genesis Root' : 'Standard Document');
 
                     card.innerHTML = `
                         <div class="block-card-head">
-                            <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">BLOCK ${block.index}</span>
+                            <span style="font-weight:700; color: #be185d; font-size:13px;">BLOCK ${block.index ?? index}</span>
                             <span class="badge ${isGenesis ? 'badge-genesis' : 'badge-confirmed'}">
                                 ${isGenesis ? 'GENESIS' : 'CONFIRMED'}
                             </span>
                         </div>
-                        <div style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">${title}</div>
+                        <!-- Document Type displayed prominently -->
+                        <div style="font-size: 15px; font-weight: 700; color: #831843; margin-bottom: 6px; text-transform: capitalize;">
+                            ${docType}
+                        </div>
                         <div style="font-size: 11px; color: var(--text-dim);">${new Date(block.timestamp).toLocaleString()}</div>
                     `;
 
@@ -968,7 +1071,7 @@
             detailsPanel.innerHTML = `
                 <div class="card-title">Block #${block.index} Cryptographic Payload</div>
                 <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
-                    Block Hash: <span style="color: var(--accent-green); font-family: monospace;">${block.hash}</span>
+                    Block Hash: <span style="color: #ea580c; font-family: monospace;">${block.hash}</span>
                 </div>
                 <div class="payload-container">${payloadFormatted}</div>
             `;

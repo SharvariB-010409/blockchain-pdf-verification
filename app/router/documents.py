@@ -47,6 +47,7 @@ async def upload_document(
                     "document_id": str(document_exists.id),
                     "record_id": str(document_exists.id),
                     "document_type": document_exists.document_type,
+                    "original_filename": document_exists.original_filename,
                     "sha256_hash": document_exists.sha256_hash,
                     "blockchain_status": document_exists.blockchain_status,
                     "blockchain_transaction_id": document_exists.blockchain_transaction_id,
@@ -109,6 +110,7 @@ async def upload_document(
                     "message": "Document saved, but blockchain registration failed.",
                     "document_id": document_id,
                     "document_type" : document_type,
+                    "original_filename": document.original_filename,
                     "sha256_hash": formatted_hash,
                     "document_status": "PENDING",
                     "blockchain_status": "FAILED"
@@ -121,6 +123,7 @@ async def upload_document(
                                 "document_id": str(document.id),
                                 "record_id": str(document.id),
                                 "document_type": document_type,
+                                "original_filename": document.original_filename,
                                 "sha256_hash": f"sha256:{document.sha256_hash.replace('sha256:', '')}",
                                 "blockchain_status": str(document.blockchain_status).lower(), 
                                 "blockchain_transaction_id": document.blockchain_transaction_id
@@ -257,7 +260,25 @@ async def delete_document(document_id: str, db: Session = Depends(get_db)):
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content={"success": True, "message": "Document and blockchain record removed"})
-   
+  
+  
+# get all documents
+@router.get("", status_code=status.HTTP_200_OK)
+async def get_all_documents(db: Session = Depends(get_db)):
+    documents = db.query(Document).all()
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=[
+            {
+                "id": str(doc.id),
+                "document_type": doc.document_type,
+                "original_filename": doc.original_filename,
+                "sha256_hash": doc.sha256_hash
+            }
+            for doc in documents
+        ],
+    )
+ 
 # get all records of blockchain
 @router.get("/blockchain/chain")
 async def get_full_blockchain():

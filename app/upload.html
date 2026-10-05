@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Verification - Blockchain Ledger</title>
+    <title>Blockchain Document</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --panel-bg: #111827;
-            --card-bg: #1f2937;
-            --accent-cyan: #06b6d4;
+            --bg-dark: #0a0e17;
+            --panel-bg: #111726;
+            --card-bg: #182032;
+            --card-border: #1e293b;
+            --accent-cyan: #00e5ff;
             --accent-green: #10b981;
-            --accent-blue: #3b82f6;
             --accent-red: #ef4444;
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --border-color: #1f2937;
-            --border-active: #06b6d4;
-            --glow-color: rgba(6, 182, 212, 0.25);
+            --accent-purple: #818cf8;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --glow-cyan: rgba(0, 229, 255, 0.2);
+            --glow-green: rgba(16, 185, 129, 0.2);
         }
 
         * {
@@ -30,123 +31,220 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            padding: 24px;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* App Container & Sidebar Layout */
+        .app-container {
+            display: flex;
+            width: 100vw;
             min-height: 100vh;
         }
 
-        .dashboard {
-            max-width: 1000px;
-            margin: 0 auto;
+        aside {
+            width: 250px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 16px;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .brand-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-cyan);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-version {
+            font-size: 10px;
+            color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .nav-group-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active {
+            color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 15px var(--glow-cyan);
+        }
+
+        .sidebar-footer {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 11px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            margin-right: 6px;
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        /* Main Workspace Area */
+        main {
+            flex: 1;
+            padding: 24px 32px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 24px;
         }
 
-        header {
+        .top-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--panel-bg);
-            padding: 16px 24px;
-            border-radius: 12px;
-            border: 1px solid #1e293b;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 16px;
         }
 
-        h1 {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-link {
-            color: var(--accent-cyan);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 12px;
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-link:hover {
-            background: rgba(6, 182, 212, 0.1);
-        }
-
-        /* Tab Controls */
-        .tab-container {
-            display: flex;
-            gap: 12px;
-            border-bottom: 1px solid #1e293b;
-            padding-bottom: 12px;
-        }
-
-        .tab-btn {
-            background: var(--panel-bg);
-            border: 1px solid #1e293b;
-            color: var(--text-secondary);
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s ease;
+        .header-status {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 16px;
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
         }
 
-        .tab-btn.active {
-            background: var(--card-bg);
+        .badge-pill {
+            background: rgba(0, 229, 255, 0.1);
             color: var(--accent-cyan);
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 10px var(--glow-color);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        /* Section Panels */
-        .section-panel {
-            background: var(--panel-bg);
-            border: 1px solid #1e293b;
-            border-radius: 14px;
-            padding: 24px;
+        /* Views Switching */
+        .page-view {
             display: none;
             flex-direction: column;
             gap: 20px;
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.25s ease-out;
         }
 
-        .section-panel.active {
+        .page-view.active {
             display: flex;
         }
 
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .view-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
-        .section-sub {
+        .view-sub {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             margin-top: 4px;
         }
 
-        /* Drag and Drop Zone */
-        .drop-zone {
-            border: 2px dashed #374151;
+        /* Grid Utilities */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
             border-radius: 12px;
-            padding: 40px 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Drag & Drop Areas */
+        .drop-zone {
+            border: 2px dashed rgba(0, 229, 255, 0.25);
+            border-radius: 10px;
+            padding: 36px 20px;
             text-align: center;
-            background: rgba(17, 24, 39, 0.5);
+            background: rgba(24, 32, 50, 0.5);
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -157,258 +255,503 @@
 
         .drop-zone:hover, .drop-zone.dragover {
             border-color: var(--accent-cyan);
-            background: rgba(6, 182, 212, 0.05);
+            background: rgba(0, 229, 255, 0.05);
+            box-shadow: 0 0 20px var(--glow-cyan);
         }
 
-        .drop-zone-icon {
-            font-size: 36px;
+        .drop-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 229, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            font-size: 20px;
         }
 
-        .drop-zone-text {
+        .drop-text {
             font-size: 14px;
-            color: var(--text-primary);
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        .drop-zone-hint {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .drop-subtext {
+            font-size: 11px;
+            color: var(--text-dim);
         }
 
-        /* Form elements */
+        /* Forms & Inputs */
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
-        label {
-            font-size: 12px;
+        .form-label {
+            font-size: 10px;
             text-transform: uppercase;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--text-dim);
             letter-spacing: 0.5px;
         }
 
-        input[type="text"], textarea {
-            background: #0b0f19;
-            border: 1px solid #1e293b;
+        .form-input {
+            background: #0d121d;
+            border: 1px solid var(--card-border);
             border-radius: 8px;
-            padding: 12px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-size: 13px;
             outline: none;
             transition: border-color 0.2s ease;
         }
 
-        input[type="text"]:focus, textarea:focus {
+        .form-input:focus {
             border-color: var(--accent-cyan);
         }
 
-        /* Action Buttons */
-        .btn-submit {
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-            color: #ffffff;
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #00e5ff, #0099ff);
+            color: #000;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 12px 20px;
             border: none;
-            padding: 12px 24px;
             border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
             cursor: pointer;
-            transition: opacity 0.2s ease, transform 0.1s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .btn-submit:hover {
+        .btn-primary:hover {
             opacity: 0.9;
+            box-shadow: 0 0 20px var(--glow-cyan);
         }
 
-        .btn-submit:active {
-            transform: scale(0.99);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.5;
+        .btn-primary:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
+            box-shadow: none;
         }
 
         /* Hash Display Box */
         .hash-card {
-            background: var(--card-bg);
-            border: 1px solid #1e293b;
-            border-radius: 10px;
-            padding: 16px;
-        }
-
-        .hash-display {
-            font-family: 'Fira Code', monospace;
-            font-size: 13px;
-            color: var(--accent-cyan);
-            background: #0b0f19;
-            padding: 12px;
+            background: #0d121d;
+            border: 1px solid var(--card-border);
             border-radius: 8px;
-            border: 1px solid #1e293b;
+            padding: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--accent-cyan);
             word-break: break-all;
-            margin-top: 6px;
         }
 
-        /* Verification Results Banner */
         .result-box {
             padding: 16px;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid transparent;
             display: none;
             flex-direction: column;
-            gap: 8px;
-            animation: fadeIn 0.3s ease-in-out;
+            gap: 6px;
+            font-size: 13px;
         }
 
         .result-box.valid {
             display: flex;
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.08);
             border-color: rgba(16, 185, 129, 0.4);
             color: var(--accent-green);
         }
 
         .result-box.invalid {
             display: flex;
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.08);
             border-color: rgba(239, 68, 68, 0.4);
             color: var(--accent-red);
         }
 
-        .result-header {
-            font-size: 16px;
-            font-weight: 700;
+        /* ================= BLOCKCHAIN EXPLORER STYLES ================= */
+        .chain-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 5px 20px 5px;
+            gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-cyan) var(--bg-dark);
         }
 
-        .result-details {
+        .block-card {
+            background: var(--card-bg);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            min-width: 260px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .block-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 229, 255, 0.5);
+        }
+
+        .block-card.active {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px var(--glow-cyan);
+            background: #111827;
+        }
+
+        .block-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .block-num {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--accent-cyan);
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-genesis { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .badge-confirmed { background: rgba(0, 229, 255, 0.2); color: var(--accent-cyan); }
+
+        .block-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .block-card-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .mini-hash-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .mini-hash-val {
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            color: #38bdf8;
+            background: #0b0f19;
+            padding: 4px 6px;
+            border-radius: 4px;
+            margin-top: 2px;
+            word-break: break-all;
+        }
+
+        .connector {
+            color: var(--accent-cyan);
+            font-size: 20px;
+            font-weight: bold;
+            padding: 0 4px;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+
+        .details-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 16px;
+        }
+
+        .details-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .details-icon {
+            font-size: 24px;
+        }
+
+        .details-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .payload-container {
+            background: #0b0f19;
+            color: #e5e7eb;
+            font-family: 'Fira Code', monospace;
             font-size: 13px;
-            color: var(--text-primary);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .loader {
+            color: var(--text-muted);
+            font-size: 14px;
+            text-align: center;
+            padding: 30px;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <header>
-            <h1>Document Verification Portal</h1>
-            <a href="blockchain.html" class="nav-link">🔗 View Ledger</a>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <div class="tab-container">
-            <button class="tab-btn active" onclick="switchTab('upload')">
-                📤 Upload & Anchor
-            </button>
-            <button class="tab-btn" onclick="switchTab('verify')">
-                🔍 Verify Document
-            </button>
-        </div>
-
-        <!-- TAB 1: UPLOAD & ANCHOR -->
-        <div class="section-panel active" id="uploadPanel">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside>
             <div>
-                <div class="section-title">Anchor Document to Blockchain</div>
-                <div class="section-sub">Upload a document to compute its SHA-256 fingerprint and register it into the ledger.</div>
+                <div class="brand-logo">
+                    <div class="brand-icon">⚡</div>
+                    <div>
+                        <div class="brand-title">Blockchain</div>
+                        <div style="font-size: 9px; color: var(--text-dim);">View Documents</div>
+                    </div>
+                    <span class="brand-version">v2.4</span>
+                </div>
+
+                <div class="nav-group-title">Node Terminal</div>
+                <ul class="nav-menu">
+                    <li class="nav-item active" id="nav-upload" onclick="switchTab('upload')">
+                        <span>📤</span> Upload Document
+                    </li>
+                    <li class="nav-item" id="nav-verify" onclick="switchTab('verify')">
+                        <span>🛡️</span> Verify Document
+                    </li>
+                    <li class="nav-item" id="nav-explorer" onclick="switchTab('explorer')">
+                        <span>🔗</span> View Blockchain
+                    </li>
+                </ul>
             </div>
 
-            <!-- Drag/Drop Dropzone -->
-            <div class="drop-zone" id="uploadDropZone" onclick="document.getElementById('uploadFileInput').click()">
-                <div class="drop-zone-icon">📁</div>
-                <div class="drop-zone-text" id="uploadFileName">Click or drop a document here to select</div>
-                <div class="drop-zone-hint">Supports PDF, DOCX, PNG, JPG, TXT (Max 50MB)</div>
+            <div class="sidebar-footer">
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <span class="status-dot"></span>
+                    <span style="font-weight: 600;">Total Blocks</span>
+                </div>
+                <div style="font-family: 'Fira Code', monospace; color: var(--text-dim); font-size: 10px;" id="sidebarHeight">Height: #000_MAIN</div>
             </div>
-            <input type="file" id="uploadFileInput" style="display: none;" onchange="handleFileSelect(event, 'upload')">
+        </aside>
 
-            <!-- Calculated Hash Display -->
-            <div class="hash-card" id="uploadHashCard" style="display: none;">
-                <label>Calculated SHA-256 Checksum</label>
-                <div class="hash-display" id="uploadHashValue">Generating checksum...</div>
-            </div>
-
-            <!-- Optional Metadata Fields -->
-            <div class="form-group">
-                <label for="docTitle">Document Title / Reference</label>
-                <input type="text" id="docTitle" placeholder="e.g., Q3 Financial Report, Land Title Deed #402">
+        <!-- Main Content Area -->
+        <main>
+            <!-- Header Bar -->
+            <div class="top-header">
+                <div style="font-size: 12px; color: var(--text-dim); font-family: 'Fira Code', monospace;">
+                    UPLOAD, VERIFY AND VIEW DOCUMENTS
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="docDescription">Description / Notes</label>
-                <textarea id="docDescription" rows="3" placeholder="Optional brief notes or metadata regarding this document..."></textarea>
+            <!-- PAGE 1: UPLOAD DOCUMENT -->
+            <div class="page-view active" id="view-upload">
+                <div>
+                    <div class="view-title">Upload Document</div>
+                </div>
+
+                <div class="grid-2col">
+                    <!-- Left: Dropzone -->
+                    <div class="panel-card">
+                        <div class="card-title">Select Document</div>
+                        <div class="drop-zone" id="uploadDropZone" onclick="document.getElementById('uploadFileInput').click()">
+                            <div class="drop-icon">☁️</div>
+                            <div class="drop-text" id="uploadFileName">Drag & drop file or browse</div>
+                            <div class="drop-subtext">Only PDF files can be uploaded (up to 50MB)</div>
+                        </div>
+                        <input type="file" id="uploadFileInput" style="display: none;" onchange="handleFileSelect(event, 'upload')">
+
+                        <div class="form-group" id="uploadHashGroup" style="display: none;">
+                            <span class="form-label">Deterministic Digest (SHA-256)</span>
+                            <div class="hash-card" id="uploadHashVal">Calculating...</div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Options -->
+                    <div class="panel-card">
+                        <div class="card-title">Notarization Parameters</div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="docTitle">Document Type</label>
+                            <input type="text" id="docTitle" class="form-input" placeholder="e.g., Q4 Financial Audit & Ledger Proof">
+                        </div>
+
+                        <button class="btn-primary" id="anchorBtn" onclick="submitAnchor()" disabled style="margin-top: auto;">
+                             Upload Document
+                        </button>
+
+                        <div class="result-box" id="uploadResult"></div>
+                    </div>
+                </div>
             </div>
 
-            <button class="btn-submit" id="anchorBtn" onclick="submitAnchor()" disabled>
-                🔒 Commit Block to Chain
-            </button>
+            <!-- PAGE 2: VERIFY DOCUMENT -->
+            <div class="page-view" id="view-verify">
+                <div>
+                    <div class="view-title">Verify Document Authenticity</div>
+                    <div class="view-sub">Instantly check whether a document has been altered, forged, or securely anchored into the blockchain ledger.</div>
+                </div>
 
-            <!-- Status Feedback Banner -->
-            <div class="result-box" id="uploadResult"></div>
-        </div>
+                <div class="grid-2col">
+                    <!-- Left: Dropzone -->
+                    <div class="panel-card">
+                        <div class="card-title">Drop File to Verify</div>
+                        <div class="drop-zone" id="verifyDropZone" onclick="document.getElementById('verifyFileInput').click()">
+                            <div class="drop-icon">🔍</div>
+                            <div class="drop-text" id="verifyFileName">Drop the file here to verify authenticity</div>
+                            <div class="drop-subtext">or browse files from your secure device</div>
+                            <div class="drop-subtext" style="color: var(--accent-cyan); margin-top: 6px;">Zero-Knowledge Verification – Hashed locally in browser</div>
+                        </div>
+                        <input type="file" id="verifyFileInput" style="display: none;" onchange="handleFileSelect(event, 'verify')">
 
-        <!-- TAB 2: VERIFY DOCUMENT -->
-        <div class="section-panel" id="verifyPanel">
-            <div>
-                <div class="section-title">Verify Document Authenticity</div>
-                <div class="section-sub">Drop any document here to check if its contents match an existing record on the blockchain.</div>
+                        <div class="form-group" id="verifyHashGroup" style="display: none;">
+                            <span class="form-label">Calculated SHA-256 Digest</span>
+                            <div class="hash-card" id="verifyHashVal">Calculating...</div>
+                        </div>
+
+                        <button class="btn-primary" id="verifyBtn" onclick="submitVerify()" disabled>
+                            🔎 Query Ledger Consensus
+                        </button>
+                    </div>
+
+                    <!-- Right: Diagnosis -->
+                    <div class="panel-card">
+                        <div class="card-title">Verification Diagnosis</div>
+                        
+                        <div class="result-box" id="verifyResultDisplay" style="display: flex; background: rgba(255,255,255,0.02); border-color: var(--card-border);">
+                            <div style="color: var(--text-dim); text-align: center; padding: 40px 0;">
+                                Select or drop a document on the left to run cryptographic verification against the chain.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Drag/Drop Dropzone -->
-            <div class="drop-zone" id="verifyDropZone" onclick="document.getElementById('verifyFileInput').click()">
-                <div class="drop-zone-icon">🛡️</div>
-                <div class="drop-zone-text" id="verifyFileName">Click or drop a document to verify integrity</div>
-                <div class="drop-zone-hint">Calculates cryptographic hash client-side for zero-leak privacy</div>
+            <!-- PAGE 3: BLOCKCHAIN EXPLORER -->
+            <div class="page-view" id="view-explorer">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="view-title">Blockchain Explorer</div>
+                        <div class="view-sub">Explore the immutable chain sequence and detailed cryptographic block proofs.</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total Blocks</span>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--accent-cyan);" id="totalBlocksCount">--</div>
+                    </div>
+                </div>
+
+                <!-- Horizontal Chain View -->
+                <div class="panel-card">
+                    <div class="card-title">🔗 Blockchain Sequence</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Click any block card to view its full details and raw payload contents below.</div>
+
+                    <div class="chain-container" id="chainContainer">
+                        <div class="loader">Loading ledger records...</div>
+                    </div>
+                </div>
+
+                <!-- Detailed Block Panel -->
+                <div class="details-panel" id="detailsPanel">
+                    <div class="loader">Select a block above to view full contents.</div>
+                </div>
             </div>
-            <input type="file" id="verifyFileInput" style="display: none;" onchange="handleFileSelect(event, 'verify')">
 
-            <!-- Calculated Hash Display -->
-            <div class="hash-card" id="verifyHashCard" style="display: none;">
-                <label>Document SHA-256 Checksum</label>
-                <div class="hash-display" id="verifyHashValue">Generating checksum...</div>
-            </div>
-
-            <button class="btn-submit" id="verifyBtn" onclick="submitVerify()" disabled>
-                🔎 Query Blockchain Ledger
-            </button>
-
-            <!-- Verification Results Banner -->
-            <div class="result-box" id="verifyResult"></div>
-        </div>
+        </main>
     </div>
 
     <script>
-        let selectedUploadFile = null;
-        let selectedVerifyFile = null;
-        let uploadFileHash = '';
-        let verifyFileHash = '';
+        let uploadFile = null;
+        let uploadHash = '';
+        let verifyFile = null;
+        let verifyHash = '';
+        let globalChainData = [];
 
-        // Tab Switching Logic
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.section-panel').forEach(panel => panel.classList.remove('active'));
+        // Tab Navigation
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
 
-            if (tabName === 'upload') {
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.getElementById('uploadPanel').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                document.getElementById('verifyPanel').classList.add('active');
+            if (tab === 'upload') {
+                document.getElementById('nav-upload').classList.add('active');
+                document.getElementById('view-upload').classList.add('active');
+            } else if (tab === 'verify') {
+                document.getElementById('nav-verify').classList.add('active');
+                document.getElementById('view-verify').classList.add('active');
+            } else if (tab === 'explorer') {
+                document.getElementById('nav-explorer').classList.add('active');
+                document.getElementById('view-explorer').classList.add('active');
+                loadBlockchain(); // Automatically load/refresh chain when clicking Explorer
             }
         }
 
-        // Setup Drag and Drop Listeners
+        // Drag & Drop Setup
         ['uploadDropZone', 'verifyDropZone'].forEach(id => {
             const zone = document.getElementById(id);
             zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
@@ -429,47 +772,47 @@
             }
         }
 
-        // Compute Client-Side SHA-256 via Web Crypto API
+        // Client-side SHA-256 Hashing
         async function processFile(file, mode) {
-            const fileNameDisplay = document.getElementById(`${mode}FileName`);
-            const hashCard = document.getElementById(`${mode}HashCard`);
-            const hashValue = document.getElementById(`${mode}HashValue`);
+            const nameEl = document.getElementById(`${mode}FileName`);
+            const hashGroup = document.getElementById(`${mode}HashGroup`);
+            const hashVal = document.getElementById(`${mode}HashVal`);
             const btn = document.getElementById(mode === 'upload' ? 'anchorBtn' : 'verifyBtn');
 
-            fileNameDisplay.innerText = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-            hashCard.style.display = 'block';
-            hashValue.innerText = 'Calculating cryptographic SHA-256 digest...';
+            nameEl.innerText = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            hashGroup.style.display = 'flex';
+            hashVal.innerText = 'Calculating SHA-256...';
             btn.disabled = true;
 
             try {
-                const arrayBuffer = await file.arrayBuffer();
-                const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                const buffer = await file.arrayBuffer();
+                const hashBuf = await crypto.subtle.digest('SHA-256', buffer);
+                const hashArr = Array.from(new Uint8Array(hashBuf));
+                const hex = hashArr.map(b => b.toString(16).padStart(2, '0')).join('');
 
-                hashValue.innerText = hashHex;
+                hashVal.innerText = hex;
 
                 if (mode === 'upload') {
-                    selectedUploadFile = file;
-                    uploadFileHash = hashHex;
+                    uploadFile = file;
+                    uploadHash = hex;
                     document.getElementById('docTitle').value = file.name;
                     btn.disabled = false;
                 } else {
-                    selectedVerifyFile = file;
-                    verifyFileHash = hashHex;
+                    verifyFile = file;
+                    verifyHash = hex;
                     btn.disabled = false;
                 }
             } catch (err) {
-                hashValue.innerText = 'Error computing hash: ' + err.message;
+                hashVal.innerText = 'Error computing hash';
             }
         }
 
-        // Action 1: Upload / Anchor Document to API
+        // API 1: Upload / Anchor Document (POST /api/v1/documents/blockchain/add)
         async function submitAnchor() {
             const btn = document.getElementById('anchorBtn');
             const resultBox = document.getElementById('uploadResult');
             const title = document.getElementById('docTitle').value;
-            const description = document.getElementById('docDescription').value;
+            const description = document.getElementById('docNotes').value;
 
             btn.disabled = true;
             btn.innerText = 'Mining Block...';
@@ -477,91 +820,214 @@
             resultBox.style.display = 'none';
 
             try {
-                // Adjust endpoint and payload format according to your backend API specification
-                const response = await fetch('/api/v1/documents/blockchain/add', {
+                const res = await fetch('/api/v1/documents/blockchain/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        title: title || selectedUploadFile.name,
-                        file_hash: uploadFileHash,
+                        title: title || uploadFile.name,
+                        file_hash: uploadHash,
                         description: description,
-                        filename: selectedUploadFile.name,
-                        filesize: selectedUploadFile.size
+                        filename: uploadFile.name,
+                        filesize: uploadFile.size
                     })
                 });
 
-                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
-                const data = await response.json();
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
 
                 resultBox.className = 'result-box valid';
                 resultBox.innerHTML = `
-                    <div class="result-header">✅ Block Cryptographically Sealed</div>
-                    <div class="result-details">
-                        Document successfully anchored to block <strong>#${data.block_index || data.index || 'N/A'}</strong>.<br>
-                        Hash digest registered across ledger sequence.
-                    </div>
+                    <strong>✅ Block Anchored Successfully</strong>
+                    <div>Block Index: #${data.block_index || data.index || 'Confirmed'}</div>
                 `;
             } catch (err) {
                 resultBox.className = 'result-box invalid';
-                resultBox.innerHTML = `
-                    <div class="result-header">❌ Failed to Anchor Block</div>
-                    <div class="result-details">${err.message}</div>
-                `;
+                resultBox.innerHTML = `<strong>❌ Failed to Anchor Block:</strong> ${err.message}`;
             } finally {
-                btn.innerText = '🔒 Commit Block to Chain';
+                btn.innerText = '⚓ Anchor Document to Ledger';
                 btn.disabled = false;
             }
         }
 
-        // Action 2: Verify Document Hash against Blockchain API
+        // API 2: Verify Document (GET /api/v1/documents/blockchain/verify?hash=...)
         async function submitVerify() {
             const btn = document.getElementById('verifyBtn');
-            const resultBox = document.getElementById('verifyResult');
+            const display = document.getElementById('verifyResultDisplay');
 
             btn.disabled = true;
-            btn.innerText = 'Searching Ledger...';
-            resultBox.className = 'result-box';
-            resultBox.style.display = 'none';
+            btn.innerText = 'Querying Ledger...';
 
             try {
-                // Queries ledger or verification endpoint
-                const response = await fetch(`/api/v1/documents/blockchain/verify?hash=${verifyFileHash}`);
-                
-                if (!response.ok && response.status !== 404) {
-                    throw new Error(`HTTP Error ${response.status}`);
-                }
+                const res = await fetch(`/api/v1/documents/blockchain/verify?hash=${verifyHash}`);
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok && (data.verified || data.found)) {
-                    resultBox.className = 'result-box valid';
-                    resultBox.innerHTML = `
-                        <div class="result-header">✅ Authentic Document Match Found</div>
-                        <div class="result-details">
-                            <strong>Status:</strong> Unaltered & Cryptographically Valid<br>
-                            <strong>Block Index:</strong> ${data.block_index || data.index || 'Verified'}<br>
-                            <strong>Timestamp:</strong> ${data.timestamp ? new Date(data.timestamp).toLocaleString() : 'Recorded'}
+                if (res.ok && (data.verified || data.found)) {
+                    display.className = 'result-box valid';
+                    display.style.display = 'flex';
+                    display.innerHTML = `
+                        <div style="font-size: 16px; font-weight: 700; color: var(--accent-green);">
+                            ✅ Valid & Authenticated
+                        </div>
+                        <div style="color: var(--text-main); margin-top: 8px;">
+                            <strong>Status:</strong> 100% Bit-for-Bit Match<br>
+                            <strong>Block Index:</strong> #${data.block_index || data.index || 'Matched'}<br>
+                            <strong>SHA-256:</strong> <span style="font-family: monospace; font-size: 11px;">${verifyHash}</span>
                         </div>
                     `;
                 } else {
-                    resultBox.className = 'result-box invalid';
-                    resultBox.innerHTML = `
-                        <div class="result-header">⚠️ No Blockchain Match / Compromised</div>
-                        <div class="result-details">
-                            This document's checksum does not match any confirmed block in the ledger. The file may have been modified, corrupted, or was never anchored.
+                    display.className = 'result-box invalid';
+                    display.style.display = 'flex';
+                    display.innerHTML = `
+                        <div style="font-size: 16px; font-weight: 700; color: var(--accent-red);">
+                            ⚠️ Unanchored / Modified File
+                        </div>
+                        <div style="color: var(--text-main); margin-top: 8px;">
+                            No matching block fingerprint found on the ledger. This document may have been altered or was never notarized.
                         </div>
                     `;
                 }
             } catch (err) {
-                resultBox.className = 'result-box invalid';
-                resultBox.innerHTML = `
-                    <div class="result-header">❌ Verification Query Failed</div>
-                    <div class="result-details">${err.message}</div>
-                `;
+                display.className = 'result-box invalid';
+                display.style.display = 'flex';
+                display.innerHTML = `<strong>❌ Error querying API:</strong> ${err.message}`;
             } finally {
-                btn.innerText = '🔎 Query Blockchain Ledger';
+                btn.innerText = '🔎 Query Ledger Consensus';
                 btn.disabled = false;
             }
+        }
+
+        // API 3: Blockchain Explorer (GET /api/v1/documents/blockchain/chain)
+        async function loadBlockchain() {
+            const container = document.getElementById('chainContainer');
+            const totalCountBadge = document.getElementById('totalBlocksCount');
+
+            container.innerHTML = '<div class="loader">Fetching live chain...</div>';
+
+            try {
+                const response = await fetch('/api/v1/documents/blockchain/chain');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                globalChainData = data.chain || data;
+
+                totalCountBadge.innerText = `${globalChainData.length} Blocks`;
+                document.getElementById('sidebarHeight').innerText = `Height: #${globalChainData.length - 1}_MAIN`;
+                container.innerHTML = '';
+
+                globalChainData.forEach((block, index) => {
+                    const isGenesis = block.index === 0;
+
+                    const card = document.createElement('div');
+                    card.className = `block-card ${index === 0 ? 'active' : ''}`;
+                    card.id = `block-card-${block.index}`;
+                    card.onclick = () => selectBlock(index);
+
+                    let blockTitle = isGenesis ? 'Genesis Block' : `Block ${block.index}`;
+                    if (typeof block.data === 'object' && block.data.title) {
+                        blockTitle = block.data.title;
+                    } else if (typeof block.data === 'string' && block.data !== 'First Block') {
+                        blockTitle = block.data;
+                    }
+
+                    card.innerHTML = `
+                        <div class="block-card-head">
+                            <span class="block-num">BLOCK ${block.index}</span>
+                            <span class="badge ${isGenesis ? 'badge-genesis' : 'badge-confirmed'}">
+                                ${isGenesis ? 'GENESIS' : 'CONFIRMED'}
+                            </span>
+                        </div>
+                        <div class="block-card-title">${blockTitle}</div>
+                        <div class="block-card-time">${new Date(block.timestamp).toLocaleString()}</div>
+                        <div>
+                            <div class="mini-hash-label">Block Hash</div>
+                            <div class="mini-hash-val">${block.hash ? block.hash.substring(0, 16) + '...' : 'N/A'}</div>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+
+                    if (index < globalChainData.length - 1) {
+                        const conn = document.createElement('div');
+                        conn.className = 'connector';
+                        conn.innerHTML = '➔';
+                        container.appendChild(conn);
+                    }
+                });
+
+                if (globalChainData.length > 0) {
+                    selectBlock(0);
+                }
+
+            } catch (err) {
+                container.innerHTML = `<div class="loader" style="color: #ef4444;">Failed to load chain: ${err.message}</div>`;
+                totalCountBadge.innerText = 'Error';
+            }
+        }
+
+        // Render Block Details Panel
+        function selectBlock(index) {
+            const block = globalChainData[index];
+            if (!block) return;
+
+            document.querySelectorAll('.block-card').forEach(c => c.classList.remove('active'));
+            const activeCard = document.getElementById(`block-card-${block.index}`);
+            if (activeCard) activeCard.classList.add('active');
+
+            const isGenesis = block.index === 0;
+            const detailsPanel = document.getElementById('detailsPanel');
+
+            let payloadFormatted = typeof block.data === 'object' 
+                ? JSON.stringify(block.data, null, 2) 
+                : block.data;
+
+            detailsPanel.innerHTML = `
+                <div class="details-header">
+                    <div class="details-title-group">
+                        <span class="details-icon">📄</span>
+                        <div>
+                            <div class="details-title">Block ${block.index} Details</div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                                Timestamp: ${new Date(block.timestamp).toISOString()} (${new Date(block.timestamp).toLocaleString()})
+                            </div>
+                        </div>
+                    </div>
+                    <span class="badge ${isGenesis ? 'badge-genesis' : 'badge-confirmed'}" style="font-size: 12px; padding: 6px 12px;">
+                        ${isGenesis ? 'GENESIS BLOCK' : 'CRYPTOGRAPHICALLY SEALED'}
+                    </span>
+                </div>
+
+                <div class="details-grid">
+                    <div class="info-card">
+                        <div class="info-label">Block Height / Index</div>
+                        <div class="info-value">${block.index}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Validation Consensus</div>
+                        <div class="info-value" style="color: var(--accent-green);">SHA-256 Intact</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Previous Hash Proof</div>
+                        <div class="info-value" style="color: var(--accent-cyan); font-family: monospace;">
+                            ${block.previous_hash === '0' ? '0 (Genesis Root)' : 'Linked to Parent Block'}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-card" style="padding: 16px;">
+                    <div class="info-label">Previous Parent Hash (Block [N-1])</div>
+                    <div class="hash-card">${block.previous_hash}</div>
+                </div>
+
+                <div class="panel-card" style="padding: 16px;">
+                    <div class="info-label">Current Block Hash (This Block)</div>
+                    <div class="hash-card" style="color: var(--accent-green);">${block.hash}</div>
+                </div>
+
+                <div class="panel-card" style="padding: 16px;">
+                    <div class="info-label">Block Data Payload & Content</div>
+                    <div class="payload-container">${payloadFormatted}</div>
+                </div>
+            `;
         }
     </script>
 </body>

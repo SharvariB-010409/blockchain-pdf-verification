@@ -234,7 +234,7 @@ async def get_blockchain_record(
                             "document_type" : document.document_type,
                             "document_hash": f"sha256:{clean_hash}",
                             "blockchain_transaction_id": document.blockchain_transaction_id,
-                            "blokchain_block_number": actual_block_number,
+                            "blockchain_block_number": actual_block_number,
                             "status": str(document.blockchain_status).lower()
                         })
     

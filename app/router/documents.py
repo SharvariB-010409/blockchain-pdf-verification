@@ -108,6 +108,7 @@ async def upload_document(
                     "success": False,
                     "message": "Document saved, but blockchain registration failed.",
                     "document_id": document_id,
+                    "document_type" : document_type,
                     "sha256_hash": formatted_hash,
                     "document_status": "PENDING",
                     "blockchain_status": "FAILED"
@@ -119,6 +120,7 @@ async def upload_document(
                             content={
                                 "document_id": str(document.id),
                                 "record_id": str(document.id),
+                                "document_type": document_type,
                                 "sha256_hash": f"sha256:{document.sha256_hash.replace('sha256:', '')}",
                                 "blockchain_status": str(document.blockchain_status).lower(), 
                                 "blockchain_transaction_id": document.blockchain_transaction_id
@@ -190,6 +192,7 @@ async def verify_document(
                             content={
                                     "document_id": str(document.id),
                                     "record_id" : str(document.id),
+                                    "document_type" : document.document_type,
                                     "verified": overall_verified,
                                     "hash_matches": hash_matches,
                                     "blockchain_record_exists": True,
@@ -228,6 +231,7 @@ async def get_blockchain_record(
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content={
                             "record_id": str(document.id),
+                            "document_type" : document.document_type,
                             "document_hash": f"sha256:{clean_hash}",
                             "blockchain_transaction_id": document.blockchain_transaction_id,
                             "blokchain_block_number": actual_block_number,

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Verification - Blockchain Ledger</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --card-bg: #1f2937;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border-color: #1f2937;
+            --border-active: #06b6d4;
+            --glow-color: rgba(6, 182, 212, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        /* Tab Controls */
+        .tab-container {
+            display: flex;
+            gap: 12px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            background: var(--panel-bg);
+            border: 1px solid #1e293b;
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        /* Section Panels */
+        .section-panel {
+            background: var(--panel-bg);
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 24px;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .section-panel.active {
+            display: flex;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Drag and Drop Zone */
+        .drop-zone {
+            border: 2px dashed #374151;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(17, 24, 39, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .drop-zone-icon {
+            font-size: 36px;
+        }
+
+        .drop-zone-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .drop-zone-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Form elements */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], textarea {
+            background: #0b0f19;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        /* Action Buttons */
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.99);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Hash Display Box */
+        .hash-card {
+            background: var(--card-bg);
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .hash-display {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: var(--accent-cyan);
+            background: #0b0f19;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            word-break: break-all;
+            margin-top: 6px;
+        }
+
+        /* Verification Results Banner */
+        .result-box {
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .result-box.valid {
+            display: flex;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: var(--accent-green);
+        }
+
+        .result-box.invalid {
+            display: flex;
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: var(--accent-red);
+        }
+
+        .result-header {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-details {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <header>
+            <h1>Document Verification Portal</h1>
+            <a href="blockchain.html" class="nav-link">🔗 View Ledger</a>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchTab('upload')">
+                📤 Upload & Anchor
+            </button>
+            <button class="tab-btn" onclick="switchTab('verify')">
+                🔍 Verify Document
+            </button>
+        </div>
+
+        <!-- TAB 1: UPLOAD & ANCHOR -->
+        <div class="section-panel active" id="uploadPanel">
+            <div>
+                <div class="section-title">Anchor Document to Blockchain</div>
+                <div class="section-sub">Upload a document to compute its SHA-256 fingerprint and register it into the ledger.</div>
+            </div>
+
+            <!-- Drag/Drop Dropzone -->
+            <div class="drop-zone" id="uploadDropZone" onclick="document.getElementById('uploadFileInput').click()">
+                <div class="drop-zone-icon">📁</div>
+                <div class="drop-zone-text" id="uploadFileName">Click or drop a document here to select</div>
+                <div class="drop-zone-hint">Supports PDF, DOCX, PNG, JPG, TXT (Max 50MB)</div>
+            </div>
+            <input type="file" id="uploadFileInput" style="display: none;" onchange="handleFileSelect(event, 'upload')">
+
+            <!-- Calculated Hash Display -->
+            <div class="hash-card" id="uploadHashCard" style="display: none;">
+                <label>Calculated SHA-256 Checksum</label>
+                <div class="hash-display" id="uploadHashValue">Generating checksum...</div>
+            </div>
+
+            <!-- Optional Metadata Fields -->
+            <div class="form-group">
+                <label for="docTitle">Document Title / Reference</label>
+                <input type="text" id="docTitle" placeholder="e.g., Q3 Financial Report, Land Title Deed #402">
+            </div>
+
+            <div class="form-group">
+                <label for="docDescription">Description / Notes</label>
+                <textarea id="docDescription" rows="3" placeholder="Optional brief notes or metadata regarding this document..."></textarea>
+            </div>
+
+            <button class="btn-submit" id="anchorBtn" onclick="submitAnchor()" disabled>
+                🔒 Commit Block to Chain
+            </button>
+
+            <!-- Status Feedback Banner -->
+            <div class="result-box" id="uploadResult"></div>
+        </div>
+
+        <!-- TAB 2: VERIFY DOCUMENT -->
+        <div class="section-panel" id="verifyPanel">
+            <div>
+                <div class="section-title">Verify Document Authenticity</div>
+                <div class="section-sub">Drop any document here to check if its contents match an existing record on the blockchain.</div>
+            </div>
+
+            <!-- Drag/Drop Dropzone -->
+            <div class="drop-zone" id="verifyDropZone" onclick="document.getElementById('verifyFileInput').click()">
+                <div class="drop-zone-icon">🛡️</div>
+                <div class="drop-zone-text" id="verifyFileName">Click or drop a document to verify integrity</div>
+                <div class="drop-zone-hint">Calculates cryptographic hash client-side for zero-leak privacy</div>
+            </div>
+            <input type="file" id="verifyFileInput" style="display: none;" onchange="handleFileSelect(event, 'verify')">
+
+            <!-- Calculated Hash Display -->
+            <div class="hash-card" id="verifyHashCard" style="display: none;">
+                <label>Document SHA-256 Checksum</label>
+                <div class="hash-display" id="verifyHashValue">Generating checksum...</div>
+            </div>
+
+            <button class="btn-submit" id="verifyBtn" onclick="submitVerify()" disabled>
+                🔎 Query Blockchain Ledger
+            </button>
+
+            <!-- Verification Results Banner -->
+            <div class="result-box" id="verifyResult"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedUploadFile = null;
+        let selectedVerifyFile = null;
+        let uploadFileHash = '';
+        let verifyFileHash = '';
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.section-panel').forEach(panel => panel.classList.remove('active'));
+
+            if (tabName === 'upload') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('uploadPanel').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('verifyPanel').classList.add('active');
+            }
+        }
+
+        // Setup Drag and Drop Listeners
+        ['uploadDropZone', 'verifyDropZone'].forEach(id => {
+            const zone = document.getElementById(id);
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                const mode = id.includes('upload') ? 'upload' : 'verify';
+                if (e.dataTransfer.files.length > 0) {
+                    processFile(e.dataTransfer.files[0], mode);
+                }
+            });
+        });
+
+        function handleFileSelect(event, mode) {
+            if (event.target.files.length > 0) {
+                processFile(event.target.files[0], mode);
+            }
+        }
+
+        // Compute Client-Side SHA-256 via Web Crypto API
+        async function processFile(file, mode) {
+            const fileNameDisplay = document.getElementById(`${mode}FileName`);
+            const hashCard = document.getElementById(`${mode}HashCard`);
+            const hashValue = document.getElementById(`${mode}HashValue`);
+            const btn = document.getElementById(mode === 'upload' ? 'anchorBtn' : 'verifyBtn');
+
+            fileNameDisplay.innerText = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            hashCard.style.display = 'block';
+            hashValue.innerText = 'Calculating cryptographic SHA-256 digest...';
+            btn.disabled = true;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                hashValue.innerText = hashHex;
+
+                if (mode === 'upload') {
+                    selectedUploadFile = file;
+                    uploadFileHash = hashHex;
+                    document.getElementById('docTitle').value = file.name;
+                    btn.disabled = false;
+                } else {
+                    selectedVerifyFile = file;
+                    verifyFileHash = hashHex;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                hashValue.innerText = 'Error computing hash: ' + err.message;
+            }
+        }
+
+        // Action 1: Upload / Anchor Document to API
+        async function submitAnchor() {
+            const btn = document.getElementById('anchorBtn');
+            const resultBox = document.getElementById('uploadResult');
+            const title = document.getElementById('docTitle').value;
+            const description = document.getElementById('docDescription').value;
+
+            btn.disabled = true;
+            btn.innerText = 'Mining Block...';
+            resultBox.className = 'result-box';
+            resultBox.style.display = 'none';
+
+            try {
+                // Adjust endpoint and payload format according to your backend API specification
+                const response = await fetch('/api/v1/documents/blockchain/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: title || selectedUploadFile.name,
+                        file_hash: uploadFileHash,
+                        description: description,
+                        filename: selectedUploadFile.name,
+                        filesize: selectedUploadFile.size
+                    })
+                });
+
+                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+                const data = await response.json();
+
+                resultBox.className = 'result-box valid';
+                resultBox.innerHTML = `
+                    <div class="result-header">✅ Block Cryptographically Sealed</div>
+                    <div class="result-details">
+                        Document successfully anchored to block <strong>#${data.block_index || data.index || 'N/A'}</strong>.<br>
+                        Hash digest registered across ledger sequence.
+                    </div>
+                `;
+            } catch (err) {
+                resultBox.className = 'result-box invalid';
+                resultBox.innerHTML = `
+                    <div class="result-header">❌ Failed to Anchor Block</div>
+                    <div class="result-details">${err.message}</div>
+                `;
+            } finally {
+                btn.innerText = '🔒 Commit Block to Chain';
+                btn.disabled = false;
+            }
+        }
+
+        // Action 2: Verify Document Hash against Blockchain API
+        async function submitVerify() {
+            const btn = document.getElementById('verifyBtn');
+            const resultBox = document.getElementById('verifyResult');
+
+            btn.disabled = true;
+            btn.innerText = 'Searching Ledger...';
+            resultBox.className = 'result-box';
+            resultBox.style.display = 'none';
+
+            try {
+                // Queries ledger or verification endpoint
+                const response = await fetch(`/api/v1/documents/blockchain/verify?hash=${verifyFileHash}`);
+                
+                if (!response.ok && response.status !== 404) {
+                    throw new Error(`HTTP Error ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (response.ok && (data.verified || data.found)) {
+                    resultBox.className = 'result-box valid';
+                    resultBox.innerHTML = `
+                        <div class="result-header">✅ Authentic Document Match Found</div>
+                        <div class="result-details">
+                            <strong>Status:</strong> Unaltered & Cryptographically Valid<br>
+                            <strong>Block Index:</strong> ${data.block_index || data.index || 'Verified'}<br>
+                            <strong>Timestamp:</strong> ${data.timestamp ? new Date(data.timestamp).toLocaleString() : 'Recorded'}
+                        </div>
+                    `;
+                } else {
+                    resultBox.className = 'result-box invalid';
+                    resultBox.innerHTML = `
+                        <div class="result-header">⚠️ No Blockchain Match / Compromised</div>
+                        <div class="result-details">
+                            This document's checksum does not match any confirmed block in the ledger. The file may have been modified, corrupted, or was never anchored.
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultBox.className = 'result-box invalid';
+                resultBox.innerHTML = `
+                    <div class="result-header">❌ Verification Query Failed</div>
+                    <div class="result-details">${err.message}</div>
+                `;
+            } finally {
+                btn.innerText = '🔎 Query Blockchain Ledger';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

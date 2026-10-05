@@ -88,23 +88,6 @@
             color: var(--accent-cyan);
         }
 
-        .btn-sync {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-sync:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px var(--glow-color);
-        }
-
         /* Chain Sequence Panel */
         .section-panel {
             background: var(--panel-bg);
@@ -343,14 +326,9 @@
             <h1>Blockchain Explorer</h1>
             <div class="stats-bar">
                 <div class="stat-item">
-                    <span class="stat-label">Chain State</span>
-                    <span class="stat-val" style="color: var(--accent-green);">Live Verified</span>
-                </div>
-                <div class="stat-item">
                     <span class="stat-label">Total Blocks</span>
                     <span class="stat-val" id="totalBlocksCount">--</span>
                 </div>
-                <button class="btn-sync" onclick="loadBlockchain()">🔄 Sync Chain</button>
             </div>
         </header>
 

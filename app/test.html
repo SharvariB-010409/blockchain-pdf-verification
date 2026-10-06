@@ -608,7 +608,7 @@
                         <table class="docs-table">
                             <thead>
                                 <tr>
-                                    <th>Block Index</th>
+                                    <th>Block Number</th>
                                     <th>Document Type</th>
                                     <th>Original Document Name</th>
                                     <th>SHA-256 Hash</th>
@@ -1069,7 +1069,7 @@
             let payloadFormatted = typeof block.data === 'object' ? JSON.stringify(block.data, null, 2) : block.data;
 
             detailsPanel.innerHTML = `
-                <div class="card-title">Block #${block.index} Cryptographic Payload</div>
+                <div class="card-title">Block ${block.index}</div>
                 <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
                     Block Hash: <span style="color: #ea580c; font-family: monospace;">${block.hash}</span>
                 </div>

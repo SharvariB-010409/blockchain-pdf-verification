@@ -7,6 +7,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* Default: Dark Theme Variables */
         :root {
             --bg-dark: #0a0e17;
             --panel-bg: #111726;
@@ -21,6 +22,135 @@
             --text-dim: #6b7280;
             --glow-cyan: rgba(0, 229, 255, 0.2);
             --glow-green: rgba(16, 185, 129, 0.2);
+            --brand-title-color: #f3f4f6;
+            --brand-ver-bg: rgba(0, 229, 255, 0.1);
+            --brand-ver-color: #00e5ff;
+            --brand-icon-bg: #00e5ff;
+            --brand-icon-color: #000000;
+            --nav-active-color: #00e5ff;
+            --nav-active-bg: rgba(0, 229, 255, 0.08);
+            --nav-active-border: rgba(0, 229, 255, 0.3);
+            --nav-hover-bg: rgba(255, 255, 255, 0.03);
+            --nav-hover-color: #f3f4f6;
+            --sidebar-card-bg: rgba(255, 255, 255, 0.03);
+            --sidebar-card-border: rgba(255, 255, 255, 0.08);
+            --sidebar-card-text: #ffffff;
+            --status-dot-bg: #10b981;
+            --status-dot-shadow: #10b981;
+            --view-title-color: #f3f4f6;
+            --panel-shadow: none;
+            --aside-shadow: none;
+            --drop-border: rgba(0, 229, 255, 0.25);
+            --drop-bg: rgba(24, 32, 50, 0.5);
+            --drop-hover-bg: rgba(0, 229, 255, 0.05);
+            --drop-icon-bg: rgba(0, 229, 255, 0.1);
+            --drop-icon-color: #00e5ff;
+            --input-bg: #0d121d;
+            --input-focus-border: #00e5ff;
+            --btn-bg: linear-gradient(135deg, #00e5ff, #0099ff);
+            --btn-text: #000000;
+            --btn-shadow: none;
+            --btn-hover-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+            --details-bg: #0d121d;
+            --detail-border: rgba(255, 255, 255, 0.05);
+            --detail-val-color: #00e5ff;
+            --table-th-bg: #0d121d;
+            --table-td-border: rgba(255, 255, 255, 0.03);
+            --table-hover-bg: rgba(255, 255, 255, 0.02);
+            --table-hash-color: #00e5ff;
+            --table-index-color: #00e5ff;
+            --result-valid-bg: rgba(16, 185, 129, 0.08);
+            --result-valid-border: rgba(16, 185, 129, 0.4);
+            --result-valid-color: #10b981;
+            --result-invalid-bg: rgba(239, 68, 68, 0.08);
+            --result-invalid-border: rgba(239, 68, 68, 0.4);
+            --result-invalid-color: #ef4444;
+            --block-card-hover-border: rgba(0, 229, 255, 0.5);
+            --block-card-active-bg: #111827;
+            --block-badge-gen-bg: rgba(16, 185, 129, 0.2);
+            --block-badge-gen-color: #10b981;
+            --block-badge-conf-bg: rgba(0, 229, 255, 0.2);
+            --block-badge-conf-color: #00e5ff;
+            --block-connector-color: #00e5ff;
+            --block-connector-opacity: 0.6;
+            --block-type-color: #ffffff;
+            --payload-bg: #0d121d;
+            --payload-text: #e5e7eb;
+            --block-index-color: #00e5ff;
+            --hash-highlight-color: #10b981;
+        }
+
+        /* Light Theme Overrides */
+        [data-theme="light"] {
+            --bg-dark: #fff5f8;
+            --panel-bg: #ffffff;
+            --card-bg: #fdf2f8;
+            --card-border: #fbcfe8;
+            --accent-cyan: #d946ef;
+            --accent-green: #e11d48;
+            --accent-red: #ea580c;
+            --accent-purple: #a855f7;
+            --text-main: #2e1065;
+            --text-muted: #7e22ce;
+            --text-dim: #9333ea;
+            --glow-cyan: rgba(217, 70, 239, 0.25);
+            --glow-green: rgba(225, 29, 72, 0.2);
+            --brand-title-color: #831843;
+            --brand-ver-bg: #fce7f3;
+            --brand-ver-color: #be185d;
+            --brand-icon-bg: linear-gradient(135deg, #ec4899, #f97316);
+            --brand-icon-color: #ffffff;
+            --nav-active-color: #be185d;
+            --nav-active-bg: #fce7f3;
+            --nav-active-border: #f472b6;
+            --nav-hover-bg: #fce7f3;
+            --nav-hover-color: #831843;
+            --sidebar-card-bg: #fff0f6;
+            --sidebar-card-border: #fbcfe8;
+            --sidebar-card-text: #831843;
+            --status-dot-bg: #f97316;
+            --status-dot-shadow: #f97316;
+            --view-title-color: #831843;
+            --panel-shadow: 0 4px 12px rgba(236, 72, 153, 0.03);
+            --aside-shadow: 4px 0 15px rgba(236, 72, 153, 0.05);
+            --drop-border: #f472b6;
+            --drop-bg: #fff0f6;
+            --drop-hover-bg: #fce7f3;
+            --drop-icon-bg: #fce7f3;
+            --drop-icon-color: #be185d;
+            --input-bg: #fff0f6;
+            --input-focus-border: #ec4899;
+            --btn-bg: linear-gradient(135deg, #ec4899, #f97316);
+            --btn-text: #ffffff;
+            --btn-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);
+            --btn-hover-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
+            --details-bg: #fff0f6;
+            --detail-border: #fbcfe8;
+            --detail-val-color: #be185d;
+            --table-th-bg: #fff0f6;
+            --table-td-border: #fbcfe8;
+            --table-hover-bg: #fdf2f8;
+            --table-hash-color: #c026d3;
+            --table-index-color: #be185d;
+            --result-valid-bg: #f0fdf4;
+            --result-valid-border: #86efac;
+            --result-valid-color: #15803d;
+            --result-invalid-bg: #fff1f2;
+            --result-invalid-border: #fca5a5;
+            --result-invalid-color: #be123c;
+            --block-card-hover-border: #f472b6;
+            --block-card-active-bg: #ffffff;
+            --block-badge-gen-bg: #ffedd5;
+            --block-badge-gen-color: #ea580c;
+            --block-badge-conf-bg: #fce7f3;
+            --block-badge-conf-color: #be185d;
+            --block-connector-color: #ec4899;
+            --block-connector-opacity: 0.8;
+            --block-type-color: #831843;
+            --payload-bg: #fff0f6;
+            --payload-text: #701a75;
+            --block-index-color: #be185d;
+            --hash-highlight-color: #ea580c;
         }
 
         * {
@@ -36,6 +166,7 @@
             min-height: 100vh;
             display: flex;
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .app-container {
@@ -54,6 +185,8 @@
             justify-content: space-between;
             padding: 20px 16px;
             flex-shrink: 0;
+            box-shadow: var(--aside-shadow);
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
 
         .brand-logo {
@@ -66,12 +199,12 @@
         .brand-icon {
             width: 28px;
             height: 28px;
-            background: var(--accent-cyan);
+            background: var(--brand-icon-bg);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
+            color: var(--brand-icon-color);
             font-weight: 800;
             font-size: 14px;
         }
@@ -80,15 +213,17 @@
             font-weight: 700;
             font-size: 15px;
             letter-spacing: 0.5px;
+            color: var(--brand-title-color);
         }
 
         .brand-version {
             font-size: 10px;
-            color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.1);
+            color: var(--brand-ver-color);
+            background: var(--brand-ver-bg);
             padding: 2px 6px;
             border-radius: 4px;
             margin-left: auto;
+            font-weight: 600;
         }
 
         .nav-group-title {
@@ -122,33 +257,15 @@
         }
 
         .nav-item:hover {
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
+            color: var(--nav-hover-color);
+            background: var(--nav-hover-bg);
         }
 
         .nav-item.active {
-            color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.08);
-            border: 1px solid rgba(0, 229, 255, 0.3);
+            color: var(--nav-active-color);
+            background: var(--nav-active-bg);
+            border: 1px solid var(--nav-active-border);
             box-shadow: 0 0 15px var(--glow-cyan);
-        }
-
-        .sidebar-footer {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 11px;
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            margin-right: 6px;
-            box-shadow: 0 0 8px var(--accent-green);
         }
 
         .sidebar-card {
@@ -156,15 +273,25 @@
             align-items: center;
             gap: 10px;
             padding: 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--sidebar-card-bg);
+            border: 1px solid var(--sidebar-card-border);
             border-radius: 12px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--status-dot-bg);
+            border-radius: 50%;
+            margin-right: 6px;
+            box-shadow: 0 0 8px var(--status-dot-shadow);
         }
 
         .sidebar-card-text {
             font-size: 15px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--sidebar-card-text);
         }
 
         /* Main Workspace Layout */
@@ -185,6 +312,28 @@
             padding-bottom: 16px;
         }
 
+        /* Theme Toggle Button Styling */
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--panel-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--panel-shadow);
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-1px);
+        }
+
         .page-view {
             display: none;
             flex-direction: column;
@@ -199,7 +348,7 @@
         .view-title {
             font-size: 24px;
             font-weight: 700;
-            color: var(--text-main);
+            color: var(--view-title-color);
         }
 
         .grid-2col {
@@ -216,21 +365,23 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            box-shadow: var(--panel-shadow);
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
 
         .card-title {
             font-size: 15px;
             font-weight: 600;
-            color: var(--text-main);
+            color: var(--view-title-color);
         }
 
         /* Dropzone */
         .drop-zone {
-            border: 2px dashed rgba(0, 229, 255, 0.25);
+            border: 2px dashed var(--drop-border);
             border-radius: 10px;
             padding: 32px 20px;
             text-align: center;
-            background: rgba(24, 32, 50, 0.5);
+            background: var(--drop-bg);
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -241,25 +392,26 @@
 
         .drop-zone:hover, .drop-zone.dragover {
             border-color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.05);
+            background: var(--drop-hover-bg);
             box-shadow: 0 0 20px var(--glow-cyan);
         }
 
         .drop-icon {
             width: 44px;
             height: 44px;
-            background: rgba(0, 229, 255, 0.1);
+            background: var(--drop-icon-bg);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent-cyan);
+            color: var(--drop-icon-color);
             font-size: 20px;
         }
 
         .drop-text {
             font-size: 14px;
             font-weight: 600;
+            color: var(--brand-title-color);
         }
 
         .drop-subtext {
@@ -283,7 +435,7 @@
         }
 
         .form-input {
-            background: #0d121d;
+            background: var(--input-bg);
             border: 1px solid var(--card-border);
             border-radius: 8px;
             padding: 10px 14px;
@@ -294,12 +446,12 @@
         }
 
         .form-input:focus {
-            border-color: var(--accent-cyan);
+            border-color: var(--input-focus-border);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #00e5ff, #0099ff);
-            color: #000;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             font-weight: 700;
             font-size: 13px;
             padding: 12px 20px;
@@ -313,11 +465,12 @@
             gap: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-shadow: var(--btn-shadow);
         }
 
         .btn-primary:hover {
-            opacity: 0.9;
-            box-shadow: 0 0 20px var(--glow-cyan);
+            opacity: 0.95;
+            box-shadow: var(--btn-hover-shadow);
         }
 
         .btn-primary:disabled {
@@ -328,7 +481,7 @@
 
         /* Data Key-Value Detail Rows */
         .details-display-container {
-            background: #0d121d;
+            background: var(--details-bg);
             border: 1px solid var(--card-border);
             border-radius: 8px;
             padding: 16px;
@@ -342,7 +495,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--detail-border);
             padding-bottom: 8px;
             font-size: 12px;
         }
@@ -360,7 +513,7 @@
         }
 
         .detail-val {
-            color: var(--accent-cyan);
+            color: var(--detail-val-color);
             font-family: 'Fira Code', monospace;
             word-break: break-all;
             text-align: right;
@@ -375,7 +528,7 @@
         }
 
         .docs-table th {
-            background: #0d121d;
+            background: var(--table-th-bg);
             color: var(--text-dim);
             font-size: 10px;
             text-transform: uppercase;
@@ -385,17 +538,17 @@
 
         .docs-table td {
             padding: 12px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--table-td-border);
             color: var(--text-main);
         }
 
         .docs-table tr:hover {
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--table-hover-bg);
         }
 
         .hash-code {
             font-family: 'Fira Code', monospace;
-            color: var(--accent-cyan);
+            color: var(--table-hash-color);
             font-size: 11px;
         }
 
@@ -412,16 +565,16 @@
 
         .result-box.valid {
             display: flex;
-            background: rgba(16, 185, 129, 0.08);
-            border-color: rgba(16, 185, 129, 0.4);
-            color: var(--accent-green);
+            background: var(--result-valid-bg);
+            border-color: var(--result-valid-border);
+            color: var(--result-valid-color);
         }
 
         .result-box.invalid {
             display: flex;
-            background: rgba(239, 68, 68, 0.08);
-            border-color: rgba(239, 68, 68, 0.4);
-            color: var(--accent-red);
+            background: var(--result-invalid-bg);
+            border-color: var(--result-invalid-border);
+            color: var(--result-invalid-color);
         }
 
         /* Blockchain Explorer Component */
@@ -447,13 +600,13 @@
 
         .block-card:hover {
             transform: translateY(-4px);
-            border-color: rgba(0, 229, 255, 0.5);
+            border-color: var(--block-card-hover-border);
         }
 
         .block-card.active {
             border-color: var(--accent-cyan);
             box-shadow: 0 0 20px var(--glow-cyan);
-            background: #111827;
+            background: var(--block-card-active-bg);
         }
 
         .block-card-head {
@@ -471,21 +624,21 @@
             text-transform: uppercase;
         }
 
-        .badge-genesis { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-        .badge-confirmed { background: rgba(0, 229, 255, 0.2); color: var(--accent-cyan); }
+        .badge-genesis { background: var(--block-badge-gen-bg); color: var(--block-badge-gen-color); }
+        .badge-confirmed { background: var(--block-badge-conf-bg); color: var(--block-badge-conf-color); }
 
         .connector {
-            color: var(--accent-cyan);
+            color: var(--block-connector-color);
             font-size: 20px;
             font-weight: bold;
             padding: 0 4px;
             flex-shrink: 0;
-            opacity: 0.6;
+            opacity: var(--block-connector-opacity);
         }
 
         .payload-container {
-            background: #0d121d;
-            color: #e5e7eb;
+            background: var(--payload-bg);
+            color: var(--payload-text);
             font-family: 'Fira Code', monospace;
             font-size: 12px;
             padding: 16px;
@@ -551,6 +704,11 @@
                 <div style="font-size: 11px; color: var(--text-dim); font-family: 'Fira Code', monospace;">
                     UPLOAD, VERIFY AND VIEW DOCUMENTS
                 </div>
+                <!-- Theme Toggle Button -->
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">
+                    <span id="themeIcon">☀️</span>
+                    <span id="themeText">Light Mode</span>
+                </button>
             </div>
 
             <!-- TAB 1: UPLOAD DOCUMENT -->
@@ -677,6 +835,35 @@
         let selectedVerifyFile = null;
         let selectedVerifyHash = '';
         let globalChainData = [];
+
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('preferred-theme', newTheme);
+            updateThemeButtonUI(newTheme);
+        }
+
+        function updateThemeButtonUI(theme) {
+            const iconEl = document.getElementById('themeIcon');
+            const textEl = document.getElementById('themeText');
+            
+            if (theme === 'light') {
+                iconEl.innerText = '🌙';
+                textEl.innerText = 'Dark Mode';
+            } else {
+                iconEl.innerText = '☀️';
+                textEl.innerText = 'Light Mode';
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('preferred-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonUI(savedTheme);
+        }
 
         // Tab Navigation Switcher
         function switchTab(tab) {
@@ -876,7 +1063,7 @@
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td><span style="color: var(--accent-cyan); font-weight: 700;">${block.index ?? idx}</span></td>
+                        <td><span style="color: var(--table-index-color); font-weight: 700;">${block.index ?? idx}</span></td>
                         <td>${docType}</td>
                         <td style="font-weight: 600;">${fileName}</td>
                         <td class="hash-code">${rawHash.length > 20 ? rawHash.substring(0, 18) + '...' : rawHash}</td>
@@ -1015,18 +1202,18 @@
 
                     const payload = block.data || {};
                     
-                    // Extract the document type to display as the white main text
+                    // Extract the document type to display as the main text
                     const docType = payload.document_type || payload.type || (isGenesis ? 'Genesis Root' : 'Standard Document');
 
                     card.innerHTML = `
                         <div class="block-card-head">
-                            <span style="font-weight:700; color:var(--accent-cyan); font-size:13px;">BLOCK ${block.index ?? index}</span>
+                            <span style="font-weight:700; color:var(--table-index-color); font-size:13px;">BLOCK ${block.index ?? index}</span>
                             <span class="badge ${isGenesis ? 'badge-genesis' : 'badge-confirmed'}">
                                 ${isGenesis ? 'GENESIS' : 'CONFIRMED'}
                             </span>
                         </div>
-                        <!-- Document Type displayed prominently in white font -->
-                        <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px; text-transform: capitalize;">
+                        <!-- Document Type displayed prominently -->
+                        <div style="font-size: 15px; font-weight: 700; color: var(--block-type-color); margin-bottom: 6px; text-transform: capitalize;">
                             ${docType}
                         </div>
                         <div style="font-size: 11px; color: var(--text-dim);">${new Date(block.timestamp).toLocaleString()}</div>
@@ -1065,14 +1252,15 @@
             detailsPanel.innerHTML = `
                 <div class="card-title">Block ${block.index}</div>
                 <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">
-                    Block Hash: <span style="color: var(--accent-green); font-family: monospace;">${block.hash}</span>
+                    Block Hash: <span style="color: var(--hash-highlight-color); font-family: monospace;">${block.hash}</span>
                 </div>
                 <div class="payload-container">${payloadFormatted}</div>
             `;
         }
 
-        // Initialize Uploaded Docs Table on Load
+        // Initialize Theme & Uploaded Docs Table on Load
         window.onload = () => {
+            initTheme();
             fetchUploadedDocuments();
         };
     </script>

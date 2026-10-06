@@ -565,7 +565,7 @@
                         <div class="drop-zone" id="uploadDropZone" onclick="document.getElementById('uploadFileInput').click()">
                             <div class="drop-icon">☁️</div>
                             <div class="drop-text" id="uploadFileName">Drag & drop file or browse</div>
-                            <div class="drop-subtext">Only PDF files can be uploaded (up to 50MB)</div>
+                            <div class="drop-subtext">Only PDF files can be uploaded (up to 10MB)</div>
                         </div>
                         <input type="file" id="uploadFileInput" accept=".pdf" style="display: none;" onchange="handleFileSelect(event, 'upload')">
 
@@ -903,7 +903,7 @@
             }
 
             btn.disabled = true;
-            btn.innerText = 'QUERYING CHAIN...';
+            btn.innerText = 'VERIFYING DOCUMENT...';
             outcomeBox.style.display = 'none';
             detailsContainer.style.display = 'none';
 
@@ -926,7 +926,7 @@
                     outcomeBox.className = 'result-box invalid';
                     outcomeBox.innerHTML = `
                         <div style="font-size: 16px; font-weight: 700;">❌ Verification Failed</div>
-                        <div>No matching fingerprint was found on the blockchain.</div>
+                        <div>No matching hash was found on the blockchain.</div>
                     `;
                     outcomeBox.style.display = 'flex';
                     return;
@@ -971,7 +971,7 @@
                     outcomeBox.className = 'result-box invalid';
                     outcomeBox.innerHTML = `
                         <div style="font-size: 16px; font-weight: 700;">❌ Verification Failed</div>
-                        <div>No matching fingerprint was found on the blockchain. The document may have been tampered with or never anchored.</div>
+                        <div>No matching hash was found on the blockchain. The document may have been tampered with or never anchored.</div>
                     `;
                     outcomeBox.style.display = 'flex';
                 }

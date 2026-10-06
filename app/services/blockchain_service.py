@@ -203,8 +203,8 @@ class Blockchain:
 
         stored_hash = str(target_block.data.get("document_hash", ""))
 
-        case_stored_hash = stored_hash.replace("sha256:", "").lower().strip()
-        case_input_hash = str(document_hash).replace("sha256:", "").lower().strip()
+        case_stored_hash = str(stored_hash).lower().replace("sha256:", "").lower().strip()
+        case_input_hash = str(document_hash).lower().replace("sha256:", "").lower().strip()
         
         chain_hash_matches = case_stored_hash == case_input_hash
 

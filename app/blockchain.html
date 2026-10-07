@@ -622,10 +622,11 @@
             <!-- TAB 2: VERIFY DOCUMENT -->
             <div class="page-view" id="view-verify">
                 <div class="view-title">Verify Document</div>
-                <div class="form-group" style="margin-bottom: 20px;">
+
+                <!---<div class="form-group" style="margin-bottom: 20px;">
                     <label class="form-label" for="docIdInput">Document ID <span style="color: var(--accent-red);">*</span></label>
                     <input type="text" id="docIdInput" class="form-input" placeholder="e.g. abcd-13234 " style="width: 100%;">
-                </div>
+                </div> ---->
 
                 <div class="grid-2col">
                     <!-- Left Box: File Selector to Verify -->
@@ -901,13 +902,15 @@
             const btn = document.getElementById('verifySubmitBtn');
             const outcomeBox = document.getElementById('verifyOutcomeBox');
             const detailsContainer = document.getElementById('verifiedDocDetails');
-            const docIdEl = document.getElementById('docIdInput');
-            const docID = docIdEl ? docIdEl.value.trim() : '';
+
+            // const docIdEl = document.getElementById('docIdInput');
+            // const docID = docIdEl ? docIdEl.value.trim() : '';
             
-            if (!docID) {
-                alert("Please enter a document ID.");
-                return;
-            }
+            // if (!docID) {
+            //     alert("Please enter a document ID.");
+            //     return;
+            // }
+
             if (!selectedVerifyFile) {
                 alert("Please select a file to verify.");
                 return;
@@ -924,7 +927,7 @@
                 formData.append('file', selectedVerifyFile);
 
                 // Append document_id as a query string parameter to match Swagger URL structure
-                const targetUrl = `${BASE_URL}/api/v1/documents/verify?document_id=${encodeURIComponent(docID)}`;
+                const targetUrl = `${BASE_URL}/api/v1/documents/verify`;
 
                 const res = await fetch(targetUrl, {
                     method: 'POST',
@@ -954,11 +957,7 @@
                         detailsContainer.style.display = 'flex';
                     }
                 } else {
-                    let failReason = data.detail || data.message || 'No matching record was found on the ledger.';
-                    if (Array.isArray(failReason)) {
-                        failReason = failReason.map(err => `${err.loc.join('.')}: ${err.msg}`).join('<br>');
-                    }
-
+                    const failReason = data.message || data.detail || 'No matching record was found on the blockchain.';
                     outcomeBox.className = 'result-box invalid';
                     outcomeBox.innerHTML = `
                         <div style="font-size: 15px; font-weight: 700; color: var(--accent-red);">❌ Verification Failed</div>

@@ -1,4 +1,5 @@
 import uuid
+import asyncio
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from fastapi.responses import JSONResponse
@@ -15,6 +16,7 @@ router = APIRouter()
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_document(
     file: UploadFile = File(...),
+    
     document_type: str = Form(...),
     db: Session = Depends(get_db)
 ): 
@@ -80,12 +82,13 @@ async def upload_document(
 
         # Register document on Hyperledger Fabric
         try:
-            tx_result = Blockchain.upload_document(
-                document_id=str(document.id),
-                document_hash=pdf_hash,
-                document_type=document_type
-            )
-
+            tx_result = await asyncio.to_thread(
+            Blockchain.upload_document,
+            document_id=str(document.id),
+            document_hash=pdf_hash,
+            document_type=document_type,
+            original_filename=document.original_filename
+        )
             # Update document status and blockchain status in DB
             document.document_status = "ACTIVE"
             document.blockchain_status = tx_result.get("blockchain_status", "CONFIRMED")
@@ -163,7 +166,7 @@ async def upload_document(
      
 @router.post("/verify")
 async def verify_document(
-    document_id: str,
+    # document_id: str,
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
@@ -177,7 +180,7 @@ async def verify_document(
         # 2. Find document in DB by SHA-256 hash instead of document_id
         document = (
             db.query(Document)
-            .filter(Document.sha256_hash == formatted_hash)
+            .filter((Document.sha256_hash == formatted_hash) | (Document.sha256_hash == clean_uploaded))
             .first()
         )
 
@@ -264,6 +267,7 @@ async def get_blockchain_record(
                         content={
                             "record_id": str(document.id),
                             "document_type" : document.document_type,
+                            "original_filename": document.original_filename,
                             "document_hash": f"sha256:{clean_hash}",
                             "blockchain_transaction_id": document.blockchain_transaction_id,
                             "blockchain_block_number": actual_block_number,

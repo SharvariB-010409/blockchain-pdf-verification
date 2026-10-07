@@ -59,6 +59,7 @@ class Blockchain:
                 "document_id": str(doc.id),
                 "document_hash": str(doc.sha256_hash),
                 "document_type": str(doc.document_type),
+                "original_filename" : str(doc.original_filename),
                 "blockchain_status": str(doc.blockchain_status).upper(),
                 "blockchain_transaction_id": str(doc.blockchain_transaction_id),
                 "schema_version": "1.0"
@@ -141,7 +142,7 @@ class Blockchain:
     
     # upload document
     @classmethod
-    def upload_document(cls, document_id, document_hash, document_type, blockchain_status = "CONFIRMED"):
+    def upload_document(cls, document_id, document_hash, document_type, original_filename, blockchain_status = "CONFIRMED"):
         
         if not cls.health_check():
             logger.warning("Hyperledger Fabric network is unreachable.")
@@ -160,6 +161,7 @@ class Blockchain:
                      "document_id" : str(document_id),
                      "document_hash" : str(document_hash),
                      "document_type" : str(document_type),
+                     "original_filename" : str(original_filename),
                      "blockchain_status": clean_status,
                      "blockchain_transaction_id" : str(tx_id),
                      "schema_version" : "1.0"
@@ -296,6 +298,7 @@ class Blockchain:
                     "document_id": str(doc.id),
                     "document_hash": str(doc.sha256_hash),
                     "document_type": str(doc.document_type),
+                    "original_filename" : str(doc.original_filename),
                     "blockchain_status": BlockchainStatus.CONFIRMED.value,
                     "blockchain_transaction_id": tx_id,
                     "schema_version": "1.0"

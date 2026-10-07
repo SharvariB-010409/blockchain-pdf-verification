@@ -1,407 +1,330 @@
-from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, status
+import uuid
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-
 from app.db.session import get_db
 from app.db.models import Document
 from app.services.hash_service import HashService
-from app.services.blockchain_service import Blockchain
+from app.services.blockchain_service import Blockchain 
+from app.services.logger import logger
+from sqlalchemy.exc import SQLAlchemyError
 
-
-# ============================================================
-# ROUTER
-# ============================================================
-
-router = APIRouter(
-    tags=["Documents"]
-)
-
-
-# ============================================================
-# GET ALL DOCUMENTS
-# ============================================================
-
-@router.get("")
-async def get_documents(
-    db: Session = Depends(get_db)
-):
-    try:
-        documents = (
-            db.query(Document)
-            .order_by(Document.created_at.desc())
-            .all()
-        )
-
-        result = []
-
-        for document in documents:
-            result.append({
-                "document_id": str(document.id),
-                "document_type": document.document_type,
-                "original_filename": document.original_filename,
-                "sha256_hash": document.sha256_hash,
-                "file_size": document.file_size,
-                "mime_type": document.mime_type,
-                "document_status": document.status,
-                "blockchain_status": document.blockchain_status,
-                "blockchain_transaction_id": (
-                    document.blockchain_transaction_id
-                ),
-                "blockchain_block_number": (
-                    document.blockchain_block_number
-                ),
-                "created_at": document.created_at,
-                "updated_at": document.updated_at
-            })
-
-        return result
-
-    except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to load documents: {str(exc)}"
-        )
-
-
-# ============================================================
-# UPLOAD DOCUMENT
-# ============================================================
+router = APIRouter()
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_document(
     file: UploadFile = File(...),
     document_type: str = Form(...),
     db: Session = Depends(get_db)
-):
+): 
     try:
-        # ------------------------------------------------------
-        # 1. Validate PDF + generate normalized hash
-        # ------------------------------------------------------
-
-        document_hash = await HashService.validate_and_hash_pdf(file)
-
-        # ------------------------------------------------------
-        # 2. Check duplicate document
-        # ------------------------------------------------------
-
-        existing_document = (
-            db.query(Document)
-            .filter(Document.sha256_hash == document_hash)
-            .first()
-        )
-
-        if existing_document:
-            return {
-                "message": "Document already exists.",
-                "document_id": str(existing_document.id),
-                "original_filename": (
-                    existing_document.original_filename
-                ),
-                "document_type": existing_document.document_type,
-                "sha256_hash": existing_document.sha256_hash,
-                "document_status": existing_document.status,
-                "blockchain_status": (
-                    existing_document.blockchain_status
-                ),
-                "blockchain_transaction_id": (
-                    existing_document.blockchain_transaction_id
-                ),
-                "blockchain_block_number": (
-                    existing_document.blockchain_block_number
-                )
-            }
-
-        # ------------------------------------------------------
-        # 3. Read original file
-        # ------------------------------------------------------
-
+        # Validate PDF and generate SHA-256 hash
         await file.seek(0)
 
-        file_bytes = await file.read()
+        pdf_hash = await HashService.validate_and_hash_pdf(file)
+        
+        # Ensure hash starts with "sha256:"
+        if not pdf_hash.startswith("sha256:"):
+            formatted_hash = f"sha256:{pdf_hash}"
+        else:
+            formatted_hash = pdf_hash
 
-        if not file_bytes:
-            raise HTTPException(
-                status_code=400,
-                detail="Uploaded file is empty."
+        # Check whether the document hash already exists in DB
+        document_exists = (
+            db.query(Document)
+            .filter(Document.sha256_hash == formatted_hash)
+            .one_or_none()
+        )
+
+        # If document already exists, return existing record
+        if document_exists:
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={
+                    "success": True,
+                    "message": "Document already exists.",
+                    "document_id": str(document_exists.id),
+                    "record_id": str(document_exists.id),
+                    "document_type": document_exists.document_type,
+                    "original_filename": document_exists.original_filename,
+                    "sha256_hash": document_exists.sha256_hash,
+                    "blockchain_status": document_exists.blockchain_status,
+                    "blockchain_transaction_id": document_exists.blockchain_transaction_id,
+                },
             )
 
-        # ------------------------------------------------------
-        # 4. Create database record
-        # ------------------------------------------------------
+        # Generate a unique document ID
+        document_id = str(uuid.uuid4())
 
+        # Generate storage key
+        storage_key = (
+            f"documents/"
+            f"{datetime.now().strftime('%Y/%m')}/"
+            f"{document_id}/original.pdf"
+        )
+
+        # Create document record in DB
         document = Document(
+            id=document_id,
             document_type=document_type,
-            original_filename=file.filename,
-            storage_key=file.filename,
-            sha256_hash=document_hash,
-            file_size=len(file_bytes),
-            mime_type=file.content_type,
-            status="ACTIVE",
+            original_filename=file.filename or "uploaded.pdf",
+            storage_key=storage_key,
+            sha256_hash=pdf_hash,
             blockchain_status="PENDING"
         )
 
         db.add(document)
-
         db.commit()
-
         db.refresh(document)
 
-        # ------------------------------------------------------
-        # 5. Add document hash to blockchain
-        # ------------------------------------------------------
-
-        blockchain_result = await Blockchain.add_document(
-            document_id=str(document.id),
-            document_hash=document_hash,
-            document_type=document_type
-        )
-
-        # ------------------------------------------------------
-        # 6. Update blockchain information
-        # ------------------------------------------------------
-
-        if blockchain_result:
-
-            document.blockchain_status = blockchain_result.get(
-                "status",
-                "CONFIRMED"
+        # Register document on Hyperledger Fabric
+        try:
+            tx_result = Blockchain.upload_document(
+                document_id=str(document.id),
+                document_hash=pdf_hash,
+                document_type=document_type
             )
 
-            document.blockchain_transaction_id = (
-                blockchain_result.get("transaction_id")
-            )
-
-            document.blockchain_block_number = (
-                blockchain_result.get("block_number")
-            )
+            # Update document status and blockchain status in DB
+            document.document_status = "ACTIVE"
+            document.blockchain_status = tx_result.get("blockchain_status", "CONFIRMED")
+            document.blockchain_transaction_id = tx_result.get("blockchain_transaction_id")
+            document.blockchain_block_number = tx_result.get("blockchain_block_number")
 
             db.commit()
-
             db.refresh(document)
 
-        # ------------------------------------------------------
-        # 7. Return response
-        # ------------------------------------------------------
+        except Exception as e :
+            # Document uploaded but Blockchain registration failed.
+            document.document_status = "PENDING"
+            document.blockchain_status = "FAILED"
+            db.commit()
+            db.refresh(document)
 
-        return {
-            "message": "Document uploaded successfully.",
-            "document_id": str(document.id),
-            "original_filename": document.original_filename,
-            "document_type": document.document_type,
-            "sha256_hash": document.sha256_hash,
-            "document_status": document.status,
-            "blockchain_status": document.blockchain_status,
-            "blockchain_transaction_id": (
-                document.blockchain_transaction_id
-            ),
-            "blockchain_block_number": (
-                document.blockchain_block_number
+            logger.exception("Blockchain registration failed for document %s", document_id)
+            return JSONResponse(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                content={
+                    "success": False,
+                    "message": "Document saved, but blockchain registration failed.",
+                    "document_id": document_id,
+                    "document_type" : document_type,
+                    "original_filename": document.original_filename,
+                    "sha256_hash": formatted_hash,
+                    "document_status": "PENDING",
+                    "blockchain_status": "FAILED"
+                }
             )
-        }
+
+        # Return successful response
+        return JSONResponse(status_code = status.HTTP_201_CREATED,
+                            content={
+                                "document_id": str(document.id),
+                                "record_id": str(document.id),
+                                "document_type": document_type,
+                                "original_filename": document.original_filename,
+                                "sha256_hash": f"sha256:{document.sha256_hash.replace('sha256:', '')}",
+                                "blockchain_status": str(document.blockchain_status).lower(), 
+                                "blockchain_transaction_id": document.blockchain_transaction_id
+        })
 
     except HTTPException:
+        # Preserve validation errors from HashService
         raise
 
-    except SQLAlchemyError as exc:
-
+    except SQLAlchemyError:
         db.rollback()
 
-        raise HTTPException(
-            status_code=500,
-            detail=f"Database error: {str(exc)}"
+        logger.exception("Database error while uploading document")
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "success": False,
+                "message": "Database error while uploading document."
+            }
         )
 
-    except Exception as exc:
-
+    except Exception:
         db.rollback()
 
-        raise HTTPException(
-            status_code=500,
-            detail=f"Upload failed: {str(exc)}"
+        logger.exception("Unexpected error while uploading document")
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "success": False,
+                "message": "An unexpected error occurred."
+            }
         )
 
-
-# ============================================================
-# VERIFY DOCUMENT
-# ============================================================
-
+    finally:
+        await file.close()
+     
+     
 @router.post("/verify")
 async def verify_document(
+    document_id: str,
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
     try:
-        # ------------------------------------------------------
-        # 1. Generate SAME normalized hash
-        # ------------------------------------------------------
+        # 1. Calculate hash for uploaded document
+        await file.seek(0)
+        uploaded_hash = await HashService.validate_and_hash_pdf(file)
+        clean_uploaded = str(uploaded_hash).replace("sha256:", "").lower().strip()
+        formatted_hash = f"sha256:{clean_uploaded}"
 
-        uploaded_hash = (
-            await HashService.hash_pdf_for_verification(file)
-        )
-
-        # ------------------------------------------------------
-        # 2. Find document using hash
-        # ------------------------------------------------------
-
+        # 2. Find document in DB by SHA-256 hash instead of document_id
         document = (
             db.query(Document)
-            .filter(Document.sha256_hash == uploaded_hash)
+            .filter(Document.sha256_hash == formatted_hash)
             .first()
         )
 
-        # ------------------------------------------------------
-        # 3. Hash does not exist
-        # ------------------------------------------------------
-
         if not document:
-
-            return {
-                "verified": False,
-                "message": "Document verification failed.",
-                "sha256_hash": uploaded_hash
-            }
-
-        # ------------------------------------------------------
-        # 4. Check document status
-        # ------------------------------------------------------
-
-        if document.status == "REVOKED":
-
-            return {
-                "verified": False,
-                "message": "Document has been revoked.",
-                "document_id": str(document.id),
-                "sha256_hash": uploaded_hash,
-                "document_status": document.status,
-                "blockchain_status": (
-                    document.blockchain_status
-                ),
-                "blockchain_transaction_id": (
-                    document.blockchain_transaction_id
-                ),
-                "blockchain_block_number": (
-                    document.blockchain_block_number
-                )
-            }
-
-        # ------------------------------------------------------
-        # 5. Check blockchain status
-        # ------------------------------------------------------
-
-        if document.blockchain_status != "CONFIRMED":
-
-            return {
-                "verified": False,
-                "message": (
-                    "Document hash exists, but blockchain "
-                    "confirmation is not complete."
-                ),
-                "document_id": str(document.id),
-                "sha256_hash": uploaded_hash,
-                "document_status": document.status,
-                "blockchain_status": (
-                    document.blockchain_status
-                ),
-                "blockchain_transaction_id": (
-                    document.blockchain_transaction_id
-                ),
-                "blockchain_block_number": (
-                    document.blockchain_block_number
-                )
-            }
-
-        # ------------------------------------------------------
-        # 6. SUCCESS
-        # ------------------------------------------------------
-
-        return {
-            "verified": True,
-            "message": "Document verified successfully.",
-            "document_id": str(document.id),
-            "sha256_hash": uploaded_hash,
-            "document_status": document.status,
-            "blockchain_status": (
-                document.blockchain_status
-            ),
-            "blockchain_transaction_id": (
-                document.blockchain_transaction_id
-            ),
-            "blockchain_block_number": (
-                document.blockchain_block_number
+            logger.warning("No matching document found for hash: %s", formatted_hash)
+            return JSONResponse(
+                status_code=status.HTTP_404_NOT_FOUND,
+                content={
+                    "success": False,
+                    "verified": False,
+                    "message": "Document record not found in system.",
+                    "sha256_hash": formatted_hash
+                }
             )
-        }
+
+        # 3. Verify against Blockchain ledger using hash
+        ledger_result = Blockchain.verify_document(document_hash=uploaded_hash)
+        
+        record_exists = ledger_result.get("blockchain_record_exists", False)
+        chain_hash_matches = ledger_result.get("hash_matches", False)
+        block_status = str(
+            ledger_result.get("blockchain_status", document.blockchain_status)
+        ).upper()
+        
+        is_valid_status = block_status in ["CONFIRMED", "ACTIVE"]
+
+        # 4. Determine overall verification
+        overall_verified = record_exists and chain_hash_matches and is_valid_status
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "verified": overall_verified,
+                "document_id": str(document.id),
+                "record_id": str(document.id),
+                "document_type": document.document_type,
+                "original_filename": document.original_filename,
+                "sha256_hash": formatted_hash,
+                "hash_matches": True,
+                "blockchain_record_exists": record_exists,
+                "blockchain_status": block_status,
+                "blockchain_transaction_id": document.blockchain_transaction_id
+            }
+        )
 
     except HTTPException:
         raise
-
-    except Exception as exc:
-
-        raise HTTPException(
-            status_code=500,
-            detail=f"Verification failed: {str(exc)}"
+    except Exception as e:
+        logger.warning(f"Unhandled Exception during verification: {str(e)}")
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "message": f"Unhandled Exception: {str(e)}"
+            }
         )
-
-
-# ============================================================
-# GET SINGLE DOCUMENT
-# ============================================================
-
-@router.get("/{document_id}")
-async def get_document(
+     
+            
+@router.get("/{document_id}/blockchain")
+async def get_blockchain_record(
     document_id: str,
     db: Session = Depends(get_db)
 ):
-    try:
+    document = db.query(Document).filter(Document.id == document_id).one_or_none()
+    if not document:
+        logger.warning("Document not found !")
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, 
+                            content={"success" : False, 
+                                    "message" : "Document not found !"})
+        
+    actual_block_number = 1
+    for block in Blockchain.chain:
+        if (
+            isinstance(block.data, dict)
+            and block.data.get("document_id") == str(document_id)
+        ):
+            actual_block_number = block.index
+            break
 
-        document = (
-            db.query(Document)
-            .filter(Document.id == document_id)
-            .first()
+    clean_hash = document.sha256_hash.replace("sha256:", "").lower()
+    
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={
+                            "record_id": str(document.id),
+                            "document_type" : document.document_type,
+                            "document_hash": f"sha256:{clean_hash}",
+                            "blockchain_transaction_id": document.blockchain_transaction_id,
+                            "blockchain_block_number": actual_block_number,
+                            "status": str(document.blockchain_status).lower()
+                        })
+    
+# remove document 
+@router.delete("/{document_id}")
+async def delete_document(document_id: str, db: Session = Depends(get_db)):
+    document = (db.query(Document).filter(Document.id == str(document_id)).one_or_none())
+    if not document:
+        logger.warning("Document not Found")
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, 
+                            content={"success" : False, 
+                                    "message" : "Document not found !"})
+
+    # Delete from PostgreSQL database
+    db.delete(document)
+    db.commit()
+
+    # Sync removal from in-memory Blockchain
+    Blockchain.remove_document(document_id, db)
+
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={"success": True, "message": "Document and blockchain record removed"})
+  
+  
+# get all documents
+@router.get("", status_code=status.HTTP_200_OK)
+async def get_all_documents(db: Session = Depends(get_db)):
+    documents = db.query(Document).all()
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=[
+            {
+                "id": str(doc.id),
+                "document_type": doc.document_type,
+                "original_filename": doc.original_filename,
+                "sha256_hash": doc.sha256_hash
+            }
+            for doc in documents
+        ],
+    )
+ 
+# get all records of blockchain
+@router.get("/blockchain/chain")
+async def get_full_blockchain():
+    chain_data = []
+    for block in Blockchain.chain:
+        chain_data.append(
+            {
+                "index": block.index,
+                "timestamp": block.timestamp,
+                "data": block.data,
+                "previous_hash": block.previous_hash,
+                "hash": block.hash,
+            }
         )
 
-        # ------------------------------------------------------
-        # Document not found
-        # ------------------------------------------------------
-
-        if not document:
-
-            raise HTTPException(
-                status_code=404,
-                detail="Document not found."
-            )
-
-        # ------------------------------------------------------
-        # Return document
-        # ------------------------------------------------------
-
-        return {
-            "document_id": str(document.id),
-            "document_type": document.document_type,
-            "original_filename": document.original_filename,
-            "storage_key": document.storage_key,
-            "sha256_hash": document.sha256_hash,
-            "file_size": document.file_size,
-            "mime_type": document.mime_type,
-            "document_status": document.status,
-            "blockchain_status": (
-                document.blockchain_status
-            ),
-            "blockchain_transaction_id": (
-                document.blockchain_transaction_id
-            ),
-            "blockchain_block_number": (
-                document.blockchain_block_number
-            ),
-            "created_at": document.created_at,
-            "updated_at": document.updated_at
-        }
-
-    except HTTPException:
-        raise
-
-    except Exception as exc:
-
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to retrieve document: {str(exc)}"
-        )
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={
+                            "length": len(chain_data),
+                            "chain": chain_data,
+                        })

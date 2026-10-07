@@ -621,7 +621,11 @@
 
             <!-- TAB 2: VERIFY DOCUMENT -->
             <div class="page-view" id="view-verify">
-                <div class="view-title">Verify Document Authenticity</div>
+                <div class="view-title">Verify Document</div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label" for="docIdInput">Document ID <span style="color: var(--accent-red);">*</span></label>
+                    <input type="text" id="docIdInput" class="form-input" placeholder="e.g. abcd-13234 " style="width: 100%;">
+                </div>
 
                 <div class="grid-2col">
                     <!-- Left Box: File Selector to Verify -->
@@ -643,7 +647,7 @@
                     <div class="panel-card">
                         <div class="card-title">Verification Outcome</div>
                         
-                        <div class="result-box" id="verifyOutcomeBox"></div>
+                        <div class="result-box" id="verifyOutcomeBox" style="display: none;"></div>
 
                         <div class="details-display-container" id="verifiedDocDetails" style="display: none; margin-top: 12px;">
                             <!-- Dynamic verification API details populate here -->
@@ -741,6 +745,7 @@
                     selectedVerifyHash = hex;
                     btn.disabled = false;
                 }
+                btn.disabled = false;
             } catch (err) {
                 nameEl.innerText = 'Error computing file checksum';
             }
@@ -896,99 +901,98 @@
             const btn = document.getElementById('verifySubmitBtn');
             const outcomeBox = document.getElementById('verifyOutcomeBox');
             const detailsContainer = document.getElementById('verifiedDocDetails');
+            const docIdEl = document.getElementById('docIdInput');
+            const docID = docIdEl ? docIdEl.value.trim() : '';
             
+            if (!docID) {
+                alert("Please enter a document ID.");
+                return;
+            }
             if (!selectedVerifyFile) {
                 alert("Please select a file to verify.");
                 return;
             }
 
             btn.disabled = true;
+            btn.style.opacity = '0.6';
             btn.innerText = 'VERIFYING DOCUMENT...';
-            outcomeBox.style.display = 'none';
-            detailsContainer.style.display = 'none';
+            if (outcomeBox) outcomeBox.style.display = 'none';
+            if (detailsContainer) detailsContainer.style.display = 'none';
 
             try {
-                // First get all documents on chain to locate document_id
-                const chainRes = await fetch(`${BASE_URL}/api/v1/documents/blockchain/chain`);
-                const chainData = await chainRes.json();
-                const chain = chainData.chain || [];
-
-                let foundDocId = null;
-                for (const block of chain) {
-                    const d = block.data || {};
-                    if (d.document_hash === selectedVerifyHash || d.file_hash === selectedVerifyHash || d.document_hash === `sha256:${selectedVerifyHash}`) {
-                        foundDocId = d.document_id;
-                        break;
-                    }
-                }
-
-                if (!foundDocId) {
-                    outcomeBox.className = 'result-box invalid';
-                    outcomeBox.innerHTML = `
-                        <div style="font-size: 16px; font-weight: 700;">❌ Verification Failed</div>
-                        <div>No matching hash was found on the blockchain.</div>
-                    `;
-                    outcomeBox.style.display = 'flex';
-                    return;
-                }
-
                 const formData = new FormData();
                 formData.append('file', selectedVerifyFile);
 
-                const res = await fetch(`${BASE_URL}/api/v1/documents/${foundDocId}/verify`, {
+                // Append document_id as a query string parameter to match Swagger URL structure
+                const targetUrl = `${BASE_URL}/api/v1/documents/verify?document_id=${encodeURIComponent(docID)}`;
+
+                const res = await fetch(targetUrl, {
                     method: 'POST',
                     body: formData
                 });
 
                 const data = await res.json();
+                if (outcomeBox) outcomeBox.style.display = 'flex';
 
-                if (res.ok && (data.verified || data.found)) {
-                    // Successful Message
+                if (res.ok && (data.verified || data.found || data.status === 'success' || data.is_valid)) {
                     outcomeBox.className = 'result-box valid';
                     outcomeBox.innerHTML = `
                         <div style="font-size: 16px; font-weight: 700;">✅ Verification Successful</div>
-                        <div>Document hash matched a confirmed block in the ledger.</div>
+                        <div>Document content matched a confirmed record on the ledger.</div>
+                    `;
+                    
+                    let detailsHTML = `
+                        <div class="detail-row"><span class="detail-key">Document ID</span><span class="detail-val">${data.document_id || docID}</span></div>
+                        <div class="detail-row"><span class="detail-key">Original Filename</span><span class="detail-val">${data.original_filename || selectedVerifyFile.name}</span></div>
+                        <div class="detail-row"><span class="detail-key">SHA-256 Hash</span><span class="detail-val" style="font-family: monospace; font-size: 11px;">${data.sha256_hash || 'N/A'}</span></div>
+                        <div class="detail-row"><span class="detail-key">Blockchain Status</span><span class="detail-val" style="color: var(--accent-green); font-weight: 600;">${data.blockchain_status || 'CONFIRMED'}</span></div>
+                        <div class="detail-row"><span class="detail-key">Tx Hash</span><span class="detail-val" style="font-family: monospace; font-size: 11px;">${data.blockchain_transaction_id || 'N/A'}</span></div>
                     `;
 
-                    // Populate Details of Verified Document
-                    let detailsHTML = '';
-                    const detailsObj = data.document || data.block || data;
-
-                    for (const [key, val] of Object.entries(detailsObj)) {
-                        const formattedVal = typeof val === 'object' ? JSON.stringify(val) : val;
-                        detailsHTML += `
-                            <div class="detail-row">
-                                <span class="detail-key">${key.replace(/_/g, ' ')}</span>
-                                <span class="detail-val">${formattedVal}</span>
-                            </div>
-                        `;
+                    if (detailsContainer) {
+                        detailsContainer.innerHTML = detailsHTML;
+                        detailsContainer.style.display = 'flex';
+                    }
+                } else {
+                    let failReason = data.detail || data.message || 'No matching record was found on the ledger.';
+                    if (Array.isArray(failReason)) {
+                        failReason = failReason.map(err => `${err.loc.join('.')}: ${err.msg}`).join('<br>');
                     }
 
-                    detailsContainer.innerHTML = detailsHTML;
-                    detailsContainer.style.display = 'flex';
-                } else {
-                    // Failed Message
                     outcomeBox.className = 'result-box invalid';
                     outcomeBox.innerHTML = `
-                        <div style="font-size: 16px; font-weight: 700;">❌ Verification Failed</div>
-                        <div>No matching hash was found on the blockchain. The document may have been tampered with or never anchored.</div>
+                        <div style="font-size: 15px; font-weight: 700; color: var(--accent-red);">❌ Verification Failed</div>
+                        <div style="margin-top: 4px; color: var(--text-main); font-size: 13px;">${failReason}</div>
                     `;
-                    outcomeBox.style.display = 'flex';
                 }
 
-                outcomeBox.style.display = 'flex';
-
             } catch (err) {
-                outcomeBox.className = 'result-box invalid';
-                outcomeBox.innerHTML = `
-                    <div style="font-size: 15px; font-weight: 700;">❌ Verification Query Error</div>
-                    <div>${err.message}</div>
-                `;
-                outcomeBox.style.display = 'flex';
+                if (outcomeBox) {
+                    outcomeBox.style.display = 'flex';
+                    outcomeBox.className = 'result-box invalid';
+                    outcomeBox.innerHTML = `
+                        <div style="font-size: 15px; font-weight: 700; color: var(--accent-red);">❌ Connection Error</div>
+                        <div style="margin-top: 4px; color: var(--text-main);">${err.message}</div>
+                    `;
+                }
             } finally {
-                btn.innerText = 'VERIFY DOCUMENT';
                 btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.innerText = 'VERIFY DOCUMENT';
             }
+        }
+
+        async function handleVerifyFileSelect(file) {
+            selectedVerifyFile = file;
+            
+            // Calculate raw hash and pre-fill the input box
+            const arrayBuffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // Set value in the placeholder/input
+            document.getElementById('documentHashInput').value = hexHash;
         }
 
         // Blockchain Explorer Loader

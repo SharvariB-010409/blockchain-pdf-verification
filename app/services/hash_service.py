@@ -3,7 +3,7 @@ import io
 import logging
 
 from fastapi import UploadFile, HTTPException
-from pypdf import PdfReader, PdfWriter
+from pypdf import PdfReader
 
 
 logger = logging.getLogger(__name__)
@@ -11,154 +11,89 @@ logger = logging.getLogger(__name__)
 
 class HashService:
     """
-    Creates a stable SHA-256 hash for a PDF.
-
-    IMPORTANT:
-    We do NOT hash the original PDF bytes directly.
-
-    A PDF can contain changing metadata such as:
-        - CreationDate
-        - ModDate
-        - Producer
-        - Creator
-        - internal PDF object information
-
-    Two visually identical PDFs can therefore have different
-    raw SHA-256 hashes.
-
-    To avoid that problem, we rebuild the PDF without metadata
-    and calculate the hash of that normalized PDF.
+    Computes a content-based SHA-256 hash for a PDF document.
+    
+    Instead of hashing the raw file bytes or PDF byte structures (which change when 
+    saved in WPS Office, Adobe Reader, or Chrome), this class extracts the visual content:
+      1. Cleaned text from every page.
+      2. Raw bytes of all embedded images on every page.
     """
 
-    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB limit
 
-    @staticmethod
-    async def validate_and_hash_pdf(file: UploadFile) -> str:
-        """
-        Validate PDF and generate a normalized SHA-256 hash.
-
-        This is used when uploading/registering a document.
-        """
-
+    @classmethod
+    async def validate_and_hash_pdf(cls, file: UploadFile) -> str:
         try:
-            # ---------------------------------------------------------
-            # Read file
-            # ---------------------------------------------------------
+            # 1. Rewind and read raw bytes
             await file.seek(0)
             file_bytes = await file.read()
 
-            # ---------------------------------------------------------
-            # Check empty file
-            # ---------------------------------------------------------
             if not file_bytes:
+                raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+            if len(file_bytes) > cls.MAX_FILE_SIZE:
                 raise HTTPException(
-                    status_code=400,
-                    detail="Uploaded file is empty."
+                    status_code=400, 
+                    detail="File size exceeds maximum allowed limit of 10 MB."
                 )
 
-            # ---------------------------------------------------------
-            # Check file size
-            # ---------------------------------------------------------
-            if len(file_bytes) > HashService.MAX_FILE_SIZE:
-                raise HTTPException(
-                    status_code=400,
-                    detail="PDF file size must not exceed 10 MB."
-                )
-
-            # ---------------------------------------------------------
-            # Check PDF signature
-            # PDF files normally start with %PDF
-            # ---------------------------------------------------------
             if not file_bytes.startswith(b"%PDF"):
                 raise HTTPException(
-                    status_code=400,
-                    detail="Uploaded file is not a valid PDF."
+                    status_code=400, 
+                    detail="Uploaded file is not a valid PDF document."
                 )
 
-            # ---------------------------------------------------------
-            # Generate normalized hash
-            # ---------------------------------------------------------
-            pdf_hash = HashService._calculate_normalized_hash(file_bytes)
+            # 2. Generate content-based hash
+            content_hash = cls._calculate_content_hash(file_bytes)
 
-            logger.info(
-                "Normalized PDF SHA-256 generated: %s",
-                pdf_hash
-            )
-
-            return f"sha256:{pdf_hash}"
+            logger.info("Generated content SHA-256 hash: %s", content_hash)
+            return f"sha256:{content_hash}"
 
         except HTTPException:
             raise
-
         except Exception as exc:
-            logger.exception("Error while hashing PDF")
-
+            logger.exception("Error processing PDF upload.")
             raise HTTPException(
-                status_code=400,
+                status_code=500,
                 detail=f"Unable to process PDF: {str(exc)}"
             )
 
-    @staticmethod
-    def _calculate_normalized_hash(file_bytes: bytes) -> str:
+    @classmethod
+    def _calculate_content_hash(cls, file_bytes: bytes) -> str:
         """
-        Remove PDF metadata and create a stable PDF representation,
-        then calculate SHA-256.
+        Extracts textual content and image payloads page-by-page and hashes them.
         """
-
         try:
-            # ---------------------------------------------------------
-            # Read original PDF
-            # ---------------------------------------------------------
-            reader = PdfReader(io.BytesIO(file_bytes))
-
-            # ---------------------------------------------------------
-            # Create a new PDF
-            # ---------------------------------------------------------
-            writer = PdfWriter()
-
-            # Copy every page
-            for page in reader.pages:
-                writer.add_page(page)
-
-            # ---------------------------------------------------------
-            # VERY IMPORTANT:
-            # Do not copy the original metadata.
-            #
-            # We intentionally create the normalized PDF without
-            # CreationDate, ModDate, Producer, Creator, etc.
-            # ---------------------------------------------------------
-            writer.add_metadata({})
-
-            # ---------------------------------------------------------
-            # Write normalized PDF to memory
-            # ---------------------------------------------------------
-            normalized_pdf = io.BytesIO()
-
-            writer.write(normalized_pdf)
-
-            normalized_bytes = normalized_pdf.getvalue()
-
-            # ---------------------------------------------------------
-            # SHA-256
-            # ---------------------------------------------------------
+            reader = PdfReader(io.BytesIO(file_bytes), strict=False)
             sha256 = hashlib.sha256()
-            sha256.update(normalized_bytes)
+
+            for page_index, page in enumerate(reader.pages):
+                # --- A. Extract and normalize Text ---
+                extracted_text = page.extract_text() or ""
+                
+                # Strip out whitespace variances (extra spaces/newlines added by editors)
+                normalized_text = "".join(extracted_text.split())
+                
+                # Add text to hash buffer
+                sha256.update(f"page_{page_index}_text:".encode("utf-8"))
+                sha256.update(normalized_text.encode("utf-8"))
+
+                # --- B. Extract Image Payloads ---
+                # Catches logos, signatures, or scanned pages
+                if hasattr(page, "images"):
+                    for img_index, img in enumerate(page.images):
+                        sha256.update(f"page_{page_index}_img_{img_index}:".encode("utf-8"))
+                        sha256.update(img.data)
 
             return sha256.hexdigest()
 
         except Exception as exc:
-            logger.exception("Failed to normalize PDF")
+            logger.warning("pypdf extraction failed (%s); falling back to direct binary hash.", exc)
+            return hashlib.sha256(file_bytes).hexdigest()
 
-            raise ValueError(
-                f"Could not normalize PDF: {str(exc)}"
-            )
-
-    @staticmethod
-    async def hash_pdf_for_verification(file: UploadFile) -> str:
+    @classmethod
+    async def hash_pdf_for_verification(cls, file: UploadFile) -> str:
         """
-        Generate the SAME normalized hash during verification.
-
-        This MUST use exactly the same logic as registration.
+        Guarantees matching verification hash for registration and verification runs.
         """
-
-        return await HashService.validate_and_hash_pdf(file)
+        return await cls.validate_and_hash_pdf(file)

@@ -185,39 +185,38 @@ class Blockchain:
     
     # verify document
     @classmethod
-    def verify_document(cls, document_id: str, document_hash: str):
+    def verify_document(cls, document_hash: str):
         cls.first_block()
+
+        clean_input_hash = str(document_hash).lower().replace("sha256:", "").strip()
 
         target_block = None
         for block in cls.chain:
-            if isinstance(block.data, dict) and block.data.get("document_id") == str(document_id):
-                target_block = block
-                break
+            if isinstance(block.data, dict):
+                stored_hash = str(block.data.get("document_hash", "")).lower().replace("sha256:", "").strip()
+                if stored_hash == clean_input_hash:
+                    target_block = block
+                    break
 
         if not target_block:
             return {
-                    "blockchain_record_exists": False,
-                    "hash_matches": False,
-                    "blockchain_status": "FAILED",
-                }
+                "document_id": None,
+                "blockchain_record_exists": False,
+                "hash_matches": False,
+                "blockchain_status": "FAILED",
+                "blockchain_transaction_id": None,
+            }
 
-        stored_hash = str(target_block.data.get("document_hash", ""))
-
-        case_stored_hash = str(stored_hash).lower().replace("sha256:", "").lower().strip()
-        case_input_hash = str(document_hash).lower().replace("sha256:", "").lower().strip()
-        
-        chain_hash_matches = case_stored_hash == case_input_hash
-
-        blockchain_status = (
-                        str(target_block.data.get("blockchain_status", "CONFIRMED")).strip().upper()
-                        )
+        blockchain_status = str(target_block.data.get("blockchain_status", "CONFIRMED")).strip().upper()
 
         return {
-                "blockchain_record_exists": True,
-                "hash_matches": chain_hash_matches, 
-                "blockchain_status": blockchain_status,
-                "blockchain_transaction_id": target_block.data.get("blockchain_transaction_id"),
-            }
+            "document_id": target_block.data.get("document_id"),
+            "blockchain_record_exists": True,
+            "hash_matches": True,
+            "blockchain_status": blockchain_status,
+            "blockchain_transaction_id": target_block.data.get("blockchain_transaction_id"),
+            "blockchain_block_number": target_block.index
+        }
     
     #remove document 
     @classmethod

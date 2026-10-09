@@ -525,7 +525,7 @@
                     <span class="brand-version">v2.4</span>
                 </div>
 
-                <div class="nav-group-title">Node Terminal</div>
+                <div class="nav-group-title">Actions</div>
                 <ul class="nav-menu">
                     <li class="nav-item active" id="nav-upload" onclick="switchTab('upload')">
                         <span>📤</span> Upload Document
@@ -949,7 +949,7 @@
                         <div class="detail-row"><span class="detail-key">Original Filename</span><span class="detail-val">${data.original_filename || selectedVerifyFile.name}</span></div>
                         <div class="detail-row"><span class="detail-key">SHA-256 Hash</span><span class="detail-val" style="font-family: monospace; font-size: 11px;">${data.sha256_hash || 'N/A'}</span></div>
                         <div class="detail-row"><span class="detail-key">Blockchain Status</span><span class="detail-val" style="color: var(--accent-green); font-weight: 600;">${data.blockchain_status || 'CONFIRMED'}</span></div>
-                        <div class="detail-row"><span class="detail-key">Tx Hash</span><span class="detail-val" style="font-family: monospace; font-size: 11px;">${data.blockchain_transaction_id || 'N/A'}</span></div>
+                        <div class="detail-row"><span class="detail-key">Blockchain Transaction ID</span><span class="detail-val" style="font-family: monospace; font-size: 11px;">${data.blockchain_transaction_id || 'N/A'}</span></div>
                     `;
 
                     if (detailsContainer) {

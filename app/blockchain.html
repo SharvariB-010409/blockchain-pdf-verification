@@ -522,7 +522,6 @@
                         <div class="brand-title">Blockchain</div>
                         <div style="font-size: 9px; color: var(--text-dim);">View Documents</div>
                     </div>
-                    <span class="brand-version">v2.4</span>
                 </div>
 
                 <div class="nav-group-title">Actions</div>
@@ -637,9 +636,9 @@
                             <div class="drop-text" id="verifyFileName">Drop the file here to verify authenticity</div>
                             <div class="drop-subtext">or browse files from your secure device</div>
                         </div>
-                        <input type="file" id="verifyFileInput" style="display: none;" onchange="handleFileSelect(event, 'verify')">
+                        <input type="file" id="verifyFileInput" accept=".pdf" style="display: none;" onchange="handleFileSelect(event, 'verify')">
 
-                        <button class="btn-primary" id="verifySubmitBtn" onclick="submitVerify()" disabled style="margin-top: 12px;">
+                        <button class="btn-primary" id="verifySubmitBtn" onclick="submitVerify()" disabled style="margin-: 12px;">
                             VERIFY DOCUMENT
                         </button>
                     </div>
@@ -656,7 +655,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- TAB 3: BLOCKCHAIN EXPLORER -->
             <div class="page-view" id="view-explorer">
                 <div class="view-title">Blockchain Sequence</div>
